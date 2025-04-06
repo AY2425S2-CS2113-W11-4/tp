@@ -1,6 +1,5 @@
 package seedu.tripbuddy;
 
-import org.json.JSONException;
 import seedu.tripbuddy.exception.DataLoadingException;
 import seedu.tripbuddy.exception.ExceptionHandler;
 import seedu.tripbuddy.framework.InputHandler;
