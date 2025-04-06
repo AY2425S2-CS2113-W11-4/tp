@@ -2,23 +2,30 @@ package seedu.tripbuddy.storage;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.tripbuddy.dataclass.Currency;
 import seedu.tripbuddy.dataclass.Expense;
 import seedu.tripbuddy.exception.DataLoadingException;
 import seedu.tripbuddy.exception.InvalidArgumentException;
 import seedu.tripbuddy.framework.ExpenseManager;
+import seedu.tripbuddy.framework.Ui;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DataHandlerTest {
+
+    private Ui ui;
+
+    @BeforeEach
+    void setUp() {
+        this.ui = new Ui();
+    }
 
     @Test
     void testLoadDataValid() throws IOException, DataLoadingException, InvalidArgumentException {
@@ -48,7 +55,7 @@ class DataHandlerTest {
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
         // Load the data.
-        ExpenseManager expenseManager = DataHandler.loadData(tempFile.getAbsolutePath());
+        ExpenseManager expenseManager = DataHandler.loadData(tempFile.getAbsolutePath(), ui);
 
         // Verify the loaded state.
         assertEquals(budget, expenseManager.getBudget(), 0.0001);
@@ -80,7 +87,7 @@ class DataHandlerTest {
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
         // Expect a DataLoadingException due to an invalid budget.
-        assertThrows(DataLoadingException.class, () -> DataHandler.loadData(tempFile.getAbsolutePath()));
+        assertThrows(DataLoadingException.class, () -> DataHandler.loadData(tempFile.getAbsolutePath(), ui));
     }
 
     @Test
@@ -96,7 +103,13 @@ class DataHandlerTest {
         tempFile.deleteOnExit();
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
-        // Expect a DataLoadingException due to missing currency information.
-        assertThrows(DataLoadingException.class, () -> DataHandler.loadData(tempFile.getAbsolutePath()));
+        // Expect SGD due to missing currency information.
+        try {
+            ExpenseManager expenseManager = DataHandler.loadData(tempFile.getAbsolutePath(), ui);
+            assertEquals(ExpenseManager.baseCurrency, Currency.SGD);
+        } catch (DataLoadingException e) {
+            fail();
+        }
+
     }
 }
