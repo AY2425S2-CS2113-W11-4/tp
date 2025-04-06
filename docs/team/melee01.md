@@ -13,6 +13,7 @@ travelers to log expenses, categorize them, and view a summary of their spending
 * **Features for v2.0:** Added Local Date and Time, implement filter-date command.
 * **Features for v2.0:** Implement JSON FileHandler Storage Class.
 * **Features for v2.1:** Implement set-time feature.
+* **Features for v2.1:** Implement JavaDoc comments in all of the codes.
 
 * **JUnit test code:** Came up with test codes to check the accuracy and credibility of TripBuddy.
   * The JUnit test code covers on problems that might need to be checked with the issues on cases, such as:
