@@ -1,5 +1,6 @@
 package seedu.tripbuddy.framework;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.tripbuddy.dataclass.Expense;
 import seedu.tripbuddy.exception.InvalidArgumentException;
@@ -18,22 +19,28 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ExpenseManagerTest {
 
+    @BeforeEach
+    void initExpenseManager() {
+        ExpenseManager expenseManager = ExpenseManager.getInstance();
+        expenseManager.clearExpensesAndCategories();
+    }
+
     @Test
     void initBudgetTest() {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         assertEquals(2333, expenseManager.getBudget());
     }
 
     @Test
     void setBudgetTest() {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         expenseManager.setBudget(233);
         assertEquals(233, expenseManager.getBudget());
     }
 
     @Test
     void createCategoryTest_sameName_expectInvalidArgumentException() {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         assertAll(
                 () -> expenseManager.createCategory("a"),
                 () -> expenseManager.createCategory("b")
@@ -43,7 +50,7 @@ class ExpenseManagerTest {
 
     @Test
     void addExpenseTest_sameNameNoCategory_expectInvalidArgumentException() {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         assertAll(
                 () -> expenseManager.addExpense("a", 1),
                 () -> expenseManager.addExpense("b", 1)
@@ -55,7 +62,7 @@ class ExpenseManagerTest {
 
     @Test
     void addExpenseTest_sameNameHasCategory_expectInvalidArgumentException() {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         assertAll(
                 () -> expenseManager.addExpense("a", 1, "test"),
                 () -> expenseManager.addExpense("b", 1)
@@ -67,7 +74,7 @@ class ExpenseManagerTest {
 
     @Test
     void addDeleteExpenseTest_add3Delete1() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         expenseManager.addExpense("a", 1);
         expenseManager.addExpense("b", 2);
         expenseManager.deleteExpense("a");
@@ -83,7 +90,7 @@ class ExpenseManagerTest {
 
     @Test
     void addExpenseTest_categoryNotExists() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(2333);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(2333);
         assertArrayEquals(new String[]{}, expenseManager.getCategories().toArray());
 
         expenseManager.addExpense("lunch", 100, "food");
@@ -106,7 +113,7 @@ class ExpenseManagerTest {
 
     @Test
     void setExpenseCategoryTest() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(200);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(200);
         expenseManager.addExpense("testExpense", 50);
         expenseManager.setExpenseCategory("testExpense", "utilities");
         Expense expense = expenseManager.getExpense(0);
@@ -115,7 +122,7 @@ class ExpenseManagerTest {
 
     @Test
     void getMaxExpenseTest() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
         expenseManager.addExpense("expense1", 100);
         expenseManager.addExpense("expense2", 300);
         expenseManager.addExpense("expense3", 200);
@@ -127,7 +134,7 @@ class ExpenseManagerTest {
 
     @Test
     void getMinExpenseTest() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
         expenseManager.addExpense("expense1", 100);
         expenseManager.addExpense("expense2", 300);
         expenseManager.addExpense("expense3", 200);
@@ -139,19 +146,19 @@ class ExpenseManagerTest {
 
     @Test
     void getMaxExpense_emptyExpenses_throwsException() {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
-        assertThrows(InvalidArgumentException.class, () -> expenseManager.getMaxExpense());
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        assertThrows(InvalidArgumentException.class, expenseManager::getMaxExpense);
     }
 
     @Test
     void getMinExpense_emptyExpenses_throwsException() {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
-        assertThrows(InvalidArgumentException.class, () -> expenseManager.getMinExpense());
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        assertThrows(InvalidArgumentException.class, expenseManager::getMinExpense);
     }
 
     @Test
     void getExpensesByDateRangeTest() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
 
         expenseManager.addExpense("expense1", 100);
         expenseManager.addExpense("expense2", 200);
@@ -180,7 +187,7 @@ class ExpenseManagerTest {
 
     @Test
     void getExpensesByDateRangeEmptyResultTest() throws InvalidArgumentException {
-        ExpenseManager expenseManager = new ExpenseManager(1000);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
 
         expenseManager.addExpense("expenseA", 100);
         expenseManager.addExpense("expenseB", 200);

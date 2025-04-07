@@ -18,24 +18,57 @@ import java.util.logging.Logger;
  */
 public class InputHandler {
 
+    private static InputHandler instance = null;
+
     private final CommandHandler commandHandler;
     private final Parser parser;
 
-    public InputHandler(Logger logger, ExpenseManager expenseManager) {
-        this.commandHandler = new CommandHandler(expenseManager);
-        this.parser = new Parser(logger);
+    /**
+     * Private constructor for singleton pattern. Initializes the command handler and parser.
+     *
+     * @param logger Logger used for parsing debug output.
+     */
+    private InputHandler(Logger logger) {
+        this.commandHandler = CommandHandler.getInstance();
+        this.parser = Parser.getInstance(logger);
     }
 
+    /**
+     * Returns a singleton instance of {@code InputHandler}.
+     *
+     * @param logger Logger instance for parser initialization.
+     * @return The singleton {@code InputHandler}.
+     */
+    public static InputHandler getInstance(Logger logger) {
+        if (instance == null) {
+            instance = new InputHandler(logger);
+        }
+        return instance;
+    }
+
+    /**
+     * Checks if the input is a quit command.
+     *
+     * @param userInput The full user input string.
+     * @return True if the command is "quit", false otherwise.
+     */
     public boolean isQuitCommand(String userInput) {
         return userInput.split(" ")[0].equals("quit");
     }
 
+    /**
+     * Parses the user's input and executes the corresponding command.
+     * Delegates command execution to {@code CommandHandler}.
+     *
+     * @param userInput The full user input string.
+     * @return The result message from executing the command.
+     */
     public String handleUserInput(String userInput) {
         try {
             Command cmd = parser.parseCommand(userInput);
             Keyword keyword = cmd.getKeyword();
             int optCount = cmd.getOptCount();
-            String message = switch (keyword) {
+            return switch (keyword) {
             case TUTORIAL -> commandHandler.handleTutorial();
             case SET_BUDGET -> commandHandler.handleSetBudget(cmd.parseDouble(""));
             case VIEW_BUDGET -> commandHandler.handleViewBudget();
@@ -57,18 +90,15 @@ public class InputHandler {
             case SEARCH -> commandHandler.handleSearch(cmd.getOpt(""));
             case VIEW_CATEGORIES -> commandHandler.handleViewCategories();
             case SET_BASE_CURRENCY -> commandHandler.handleSetBaseCurrency(cmd.getOpt(""));
+            case SET_TIME -> commandHandler.handleSetTime(cmd.getOpt(""), cmd.getOpt("t"));
             case CLEAR -> commandHandler.handleClearAll();
             };
-            //Ui.printMessage(message);
-            return message;
         } catch (DateTimeParseException e) {
             return ExceptionHandler.handleDateTimeParseException(e);
         } catch (InvalidKeywordException e) {
             return ExceptionHandler.handleInvalidKeywordException(e);
         } catch (MissingOptionException e) {
             return ExceptionHandler.handleMissingOptionException(e);
-        } catch (NumberFormatException e) {
-            return ExceptionHandler.handleNumberFormatException();
         } catch (InvalidArgumentException e) {
             return ExceptionHandler.handleInvalidArgumentException(e);
         }

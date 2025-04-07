@@ -17,62 +17,133 @@ import java.util.Set;
  * Has CRUD access to all user data.
  */
 public class ExpenseManager {
-    public static Currency baseCurrency = Currency.SGD;
+
     public static final int DEFAULT_BUDGET = 1000;
+
+    private static ExpenseManager instance = null;
+
+    private Currency baseCurrency;
     private double budget;
-    private double totalExpense = 0;
+    private double totalExpense;
     private final HashSet<String> categories = new HashSet<>();
     private final ArrayList<Expense> expenses = new ArrayList<>();
     private final HashSet<String> expenseNames = new HashSet<>();
 
     /**
-     * Clears all existing data and initializes budget value. Uses {@code SGD} for default currency.
+     * Private constructor for singleton pattern. Initializes with a given budget.
+     *
+     * @param budget Initial budget to set.
      */
-    public ExpenseManager(double budget) {
+    private ExpenseManager(double budget) {
         assert budget > 0 : "Budget must be positive";
         this.budget = budget;
-        //this.baseCurrency = Currency.SGD;
+        this.totalExpense = 0;
+        this.baseCurrency = Currency.SGD;
         clearExpensesAndCategories();
     }
 
-    public ExpenseManager() {
-        this(DEFAULT_BUDGET);
+    /**
+     * Gets a singleton instance and sets the budget to {@code DEFAULT_BUDGET}.
+     *
+     * @return The singleton instance of {@code ExpenseManager}.
+     */
+    public static ExpenseManager getInstance() {
+        if (instance == null) {
+            instance = new ExpenseManager(DEFAULT_BUDGET);
+        }
+        return instance;
     }
 
+    /**
+     * Gets a singleton instance and sets the budget to the given value.
+     *
+     * @param budget The budget to initialize with.
+     * @return The singleton instance of {@code ExpenseManager}.
+     */
+    public static ExpenseManager getInstance(double budget) {
+        if (instance == null) {
+            instance = new ExpenseManager(budget);
+        }
+        instance.setBudget(budget);
+        return instance;
+    }
+
+    /**
+     * Gets the current base currency.
+     *
+     * @return The base {@link Currency}.
+     */
     public Currency getBaseCurrency() {
         return baseCurrency;
     }
 
+    /**
+     * Sets the base currency.
+     *
+     * @param newBaseCurrency The new base {@link Currency}.
+     */
     public void setBaseCurrency(Currency newBaseCurrency) {
         baseCurrency = newBaseCurrency;
         Currency.setBaseCurrency(baseCurrency);
     }
 
+    /**
+     * Gets the current budget.
+     *
+     * @return The current budget amount.
+     */
     public double getBudget() {
         return budget;
     }
 
+    /**
+     * Gets the total amount spent.
+     *
+     * @return Total expense amount.
+     */
     public double getTotalExpense() {
         return totalExpense;
     }
 
+    /**
+     * Sets the total amount spent.
+     *
+     * @param totalExpense New total expense value.
+     */
     public void setTotalExpense(double totalExpense) {
         this.totalExpense = totalExpense;
     }
 
+    /**
+     * Gets the remaining budget.
+     *
+     * @return Budget remaining after subtracting total expenses.
+     */
     public double getRemainingBudget() {
         return budget - totalExpense;
     }
 
+    /**
+     * Gets the list of category names.
+     *
+     * @return A list of categories.
+     */
     public List<String> getCategories() {
         return categories.stream().toList();
     }
 
+    /**
+     * Gets a list of all recorded expenses.
+     *
+     * @return A copy of the expense list.
+     */
     public List<Expense> getExpenses() {
         return List.copyOf(expenses);
     }
 
-
+    /**
+     * Clears all expenses and categories while retaining budget and currency.
+     */
     public void clearExpensesAndCategories() {
         expenses.clear();
         categories.clear();
@@ -80,15 +151,26 @@ public class ExpenseManager {
         totalExpense = 0;
     }
 
+    /**
+     * Sets the user-defined budget.
+     *
+     * @param budget The budget amount to set.
+     */
     public void setBudget(double budget) {
         assert budget > 0 : "Budget must be positive";
         this.budget = budget;
     }
 
     /**
-     * Adds a new category name into {@code categories} if not exists.
+     * Adds a new category.
+     *
+     * @param categoryName Name of the category to add.
+     * @throws InvalidArgumentException If the name is empty or already exists.
      */
     public void createCategory(String categoryName) throws InvalidArgumentException {
+        if (categoryName.isEmpty()) {
+            throw new InvalidArgumentException("", "Category name should not be empty.");
+        }
         if (categories.contains(categoryName)) {
             throw new InvalidArgumentException(categoryName, "Category name already exists.");
         }
@@ -96,10 +178,17 @@ public class ExpenseManager {
     }
 
     /**
-     * Adds a new {@link Expense} without category.
+     * Adds a new expense without a category.
+     *
+     * @param name   Expense name.
+     * @param amount Expense amount.
+     * @throws InvalidArgumentException If name is invalid or duplicate, or amount is invalid.
      */
     public void addExpense(String name, double amount) throws InvalidArgumentException {
         assert amount > 0 : "Amount must be positive";
+        if (name.isEmpty()) {
+            throw new InvalidArgumentException("", "Expense name should not be empty.");
+        }
         if (expenseNames.contains(name)) {
             throw new InvalidArgumentException(name, "Expense name already exists.");
         }
@@ -110,13 +199,18 @@ public class ExpenseManager {
     }
 
     /**
-     * Adds a new {@link Expense} with a specific category.
-     * <ul>
-     *     <li>A new category will be created if not exists.
-     * </ul>
+     * Adds a new expense with a category.
+     *
+     * @param name         Expense name.
+     * @param amount       Expense amount.
+     * @param categoryName Expense category.
+     * @throws InvalidArgumentException If name or amount is invalid.
      */
     public void addExpense(String name, double amount, String categoryName) throws InvalidArgumentException {
         assert amount > 0 : "Amount must be positive";
+        if (name.isEmpty()) {
+            throw new InvalidArgumentException("", "Expense name should not be empty.");
+        }
         if (expenseNames.contains(name)) {
             throw new InvalidArgumentException(name, "Expense name already exists.");
         }
@@ -129,9 +223,18 @@ public class ExpenseManager {
         totalExpense += amount;
     }
 
+    /**
+     * Adds a new expense from a JSON object.
+     *
+     * @param expObj JSON object representing an expense.
+     * @throws JSONException If any data is invalid or duplicate.
+     */
     public void addExpense(JSONObject expObj) throws JSONException {
         Expense expense = Expense.fromJSON(expObj);
         String name = expense.getName();
+        if (name.isEmpty()) {
+            throw new JSONException("Expense name should not be empty.");
+        }
         if (expenseNames.contains(name)) {
             throw new JSONException("Expense \"" + name + "\" already exists. Skipping");
         }
@@ -145,11 +248,23 @@ public class ExpenseManager {
                     Command.MAX_INPUT_VAL);
         }
 
+        String categoryName = expense.getCategory();
+        if (categoryName != null) {
+            categories.add(categoryName);
+        }
+
         expenses.add(expense);
         expenseNames.add(name);
         totalExpense += amount;
     }
 
+    /**
+     * Retrieves an expense by its index.
+     *
+     * @param id Index of the expense.
+     * @return The expense at the given index.
+     * @throws InvalidArgumentException If index is out of bounds.
+     */
     public Expense getExpense(int id) throws InvalidArgumentException {
         if (id < 0 || id >= expenses.size()) {
             throw new InvalidArgumentException(Integer.toString(id), "id index out of bound");
@@ -157,6 +272,12 @@ public class ExpenseManager {
         return expenses.get(id);
     }
 
+    /**
+     * Deletes an expense by name.
+     *
+     * @param expenseName Name of the expense to delete.
+     * @throws InvalidArgumentException If expense name does not exist.
+     */
     public void deleteExpense(String expenseName) throws InvalidArgumentException {
         for (Expense expense : expenses) {
             if (expense.getName().equalsIgnoreCase(expenseName)) {
@@ -169,6 +290,13 @@ public class ExpenseManager {
         throw new InvalidArgumentException(expenseName, "Expense name not found.");
     }
 
+    /**
+     * Gets expenses under a specific category.
+     *
+     * @param category Category name.
+     * @return List of expenses in that category.
+     * @throws InvalidArgumentException If category doesn't exist.
+     */
     public List<Expense> getExpensesByCategory(String category) throws InvalidArgumentException {
         if (!categories.contains(category)) {
             throw new InvalidArgumentException(category, "Category name not found.");
@@ -183,7 +311,17 @@ public class ExpenseManager {
         return ret;
     }
 
+    /**
+     * Assigns a category to an expense.
+     *
+     * @param expenseName Expense name.
+     * @param category    Category to assign.
+     * @throws InvalidArgumentException If the expense doesn't exist.
+     */
     public void setExpenseCategory(String expenseName, String category) throws InvalidArgumentException {
+        if (expenseName.isEmpty()) {
+            throw new JSONException("Expense name should not be empty.");
+        }
         for (Expense expense : expenses) {
             if (expense.getName().equalsIgnoreCase(expenseName)) {
                 expense.setCategory(category);
@@ -194,6 +332,12 @@ public class ExpenseManager {
         throw new InvalidArgumentException(expenseName, "Expense name not found.");
     }
 
+    /**
+     * Gets the expense with the maximum amount.
+     *
+     * @return The expense with the highest amount.
+     * @throws InvalidArgumentException If there are no expenses.
+     */
     public Expense getMaxExpense() throws InvalidArgumentException {
         if (expenses.isEmpty()) {
             throw new InvalidArgumentException("No expenses available");
@@ -207,6 +351,12 @@ public class ExpenseManager {
         return maxExpense;
     }
 
+    /**
+     * Gets the expense with the minimum amount.
+     *
+     * @return The expense with the lowest amount.
+     * @throws InvalidArgumentException If there are no expenses.
+     */
     public Expense getMinExpense() throws InvalidArgumentException {
         if (expenses.isEmpty()) {
             throw new InvalidArgumentException("No expenses available");
@@ -220,6 +370,13 @@ public class ExpenseManager {
         return minExpense;
     }
 
+    /**
+     * Filters expenses within the given date range.
+     *
+     * @param start Start datetime.
+     * @param end   End datetime.
+     * @return List of expenses within the range.
+     */
     public List<Expense> getExpensesByDateRange(LocalDateTime start, LocalDateTime end) {
         ArrayList<Expense> filteredExpenses = new ArrayList<>();
         for (Expense expense : expenses) {
@@ -232,11 +389,22 @@ public class ExpenseManager {
         return filteredExpenses;
     }
 
+    /**
+     * Replaces the current categories with a loaded set.
+     *
+     * @param loadedCategories Categories to load into memory.
+     */
     public void setCategories(Set<String> loadedCategories) {
         categories.clear();
         categories.addAll(loadedCategories);
     }
-  
+
+    /**
+     * Retrieves expenses whose names contain the given search word.
+     *
+     * @param searchword The keyword to search in expense names.
+     * @return List of matching expenses.
+     */
     public List<Expense> getExpensesBySearchword(String searchword) {
         ArrayList<Expense> matchingExpenses = new ArrayList<>();
         for (Expense expense : expenses) {

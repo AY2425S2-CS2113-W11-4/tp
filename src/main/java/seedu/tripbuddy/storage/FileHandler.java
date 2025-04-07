@@ -13,9 +13,23 @@ import java.util.logging.Logger;
 
 public class FileHandler {
 
+    private static FileHandler instance = null;
+
     private static final Logger LOGGER = Logger.getLogger("TripBuddy");
 
-    public static JSONObject readJsonObject(String path) throws FileNotFoundException, JSONException {
+    private FileHandler() {}
+
+    /**
+     * Gets a singleton instance of {@link FileHandler}.
+     */
+    public static FileHandler getInstance() {
+        if (instance == null) {
+            instance = new FileHandler();
+        }
+        return instance;
+    }
+
+    public JSONObject readJsonObject(String path) throws FileNotFoundException, JSONException {
         File file = new File(path);
         StringBuilder content = new StringBuilder();
         try (Scanner scanner = new Scanner(file)) {
@@ -30,7 +44,7 @@ public class FileHandler {
      * Write json string into a file. The file will be created if not exists.
      * @return absolute path of the file.
      */
-    public static String writeJsonObject(String path, JSONObject data) throws IOException {
+    public String writeJsonObject(String path, JSONObject data) throws IOException {
         File file = new File(path);
         if (file.getParentFile() != null) {
             file.getParentFile().mkdirs();

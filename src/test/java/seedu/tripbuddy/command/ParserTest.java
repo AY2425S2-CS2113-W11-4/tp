@@ -21,7 +21,7 @@ class ParserTest {
         // Create a logger instance for testing purposes.
         testLogger = Logger.getLogger("TestLogger");
         // Instantiate Parser with the injected logger.
-        parser = new Parser(testLogger);
+        parser = Parser.getInstance(testLogger);
     }
 
     @Test
@@ -79,5 +79,14 @@ class ParserTest {
         Command cmd = parser.parseCommand("add-expense aa -d2 -");
         assertEquals(Keyword.ADD_EXPENSE, cmd.getKeyword(), "keyword");
         assertEquals(2, cmd.getOptList().size(), "optList");
+    }
+
+    @Test
+    public void parseCommand_setTimeCommand_success() throws Exception {
+        Parser parser = Parser.getInstance(null);
+        Command cmd = parser.parseCommand("set-time lunch -t 2024-04-01 12:00:00");
+        assertEquals(Keyword.SET_TIME, cmd.getKeyword());
+        assertEquals("lunch", cmd.getOpt(""));
+        assertEquals("2024-04-01 12:00:00", cmd.getOpt("t"));
     }
 }

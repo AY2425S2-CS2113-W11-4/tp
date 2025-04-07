@@ -12,17 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class InputHandlerTest {
 
     private InputHandler inputHandler;
-    private Logger testLogger;
-    private ExpenseManager expenseManager;
 
     @BeforeEach
     void setUp() {
         // Create a test logger.
-        testLogger = Logger.getLogger("TestLogger");
+        Logger testLogger = Logger.getLogger("TestLogger");
         // Instantiate a test ExpenseManager with a sample budget.
-        expenseManager = new ExpenseManager(1000);
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        expenseManager.clearExpensesAndCategories();
         // Instantiate InputHandler with the injected logger and expenseManager.
-        inputHandler = new InputHandler(testLogger, expenseManager);
+        inputHandler = InputHandler.getInstance(testLogger);
     }
 
     @Test
@@ -71,6 +70,7 @@ public class InputHandlerTest {
                 () -> inputHandler.handleUserInput("create-category accommodation"),
                 () -> inputHandler.handleUserInput("add-expense greek-meal -a 10"),
                 () -> inputHandler.handleUserInput("set-category greek-meal -c food"),
+                () -> inputHandler.handleUserInput("set-time greek-meal -t 2024-04-02 12:00:00"),
                 () -> inputHandler.handleUserInput("delete-expense greek-meal")
         );
     }
@@ -85,7 +85,12 @@ public class InputHandlerTest {
                 () -> inputHandler.handleUserInput("set-category greek-meal"),
                 () -> inputHandler.handleUserInput("delete-expense greek-meal"),
                 () -> inputHandler.handleUserInput("set-budget 100000000"),
-                () -> inputHandler.handleUserInput("set-budget -1234")
+                () -> inputHandler.handleUserInput("set-budget -1234"),
+                () -> inputHandler.handleUserInput("set-time"),
+                () -> inputHandler.handleUserInput("set-time onlyexpense"),
+                () -> inputHandler.handleUserInput("set-time onlyexpense -t"),
+                () -> inputHandler.handleUserInput("set-time onlyexpense -t not-a-date"),
+                () -> inputHandler.handleUserInput("set-time nonexistent -t 2024-04-01 10:00:00")
         );
     }
 
@@ -101,7 +106,10 @@ public class InputHandlerTest {
                 () -> inputHandler.handleUserInput("add-expense Lunch -a 15 with extra text"),
                 () -> inputHandler.handleUserInput("delete-expense "),
                 () -> inputHandler.handleUserInput("view-expenses"),
-                () -> inputHandler.handleUserInput("      view-expenses")
+                () -> inputHandler.handleUserInput("      view-expenses"),
+                () -> inputHandler.handleUserInput("set-time     "),
+                () -> inputHandler.handleUserInput("set-time Lunch -t 2024-04-01 10:00:00 extra"),
+                () -> inputHandler.handleUserInput("     set-time Lunch -t 2024-04-01 10:00:00")
         );
     }
 }

@@ -23,7 +23,7 @@ class UiTest {
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         // Instantiate Ui
-        ui = new Ui();
+        ui = Ui.getInstance();
     }
 
     @AfterEach

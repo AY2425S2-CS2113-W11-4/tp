@@ -1,7 +1,10 @@
 package seedu.tripbuddy.dataclass;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import seedu.tripbuddy.framework.ExpenseManager;
+
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class ExpenseTest {
+
+    @BeforeEach
+    void initExpenseManager() {
+        ExpenseManager.getInstance().clearExpensesAndCategories();
+    }
 
     @Test
     void testConstructorWithoutCategory() {
@@ -139,5 +147,13 @@ class ExpenseTest {
         assertEquals(amount, expense.getAmount(), 0.0001);
         assertNull(expense.getCategory());
         assertEquals(dateTimeStr, expense.getDateTimeString());
+    }
+
+    @Test
+    public void setDateTime_validDateTime_success() {
+        Expense expense = new Expense("flight", 300.00);
+        LocalDateTime newTime = LocalDateTime.of(2024, 3, 30, 15, 0);
+        expense.setDateTime(newTime);
+        assertEquals(newTime, expense.getDateTime());
     }
 }

@@ -13,15 +13,21 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+/**
+ * The main entry point of the TripBuddy application.
+ * Handles application startup, data loading, logging setup, and user input loop.
+ */
 public class TripBuddy {
 
     private static final String LOG_PATH = "log.txt";
     private static final String FILE_PATH = "tripbuddy_data.json";
 
     private static Logger logger;
+    private static final Ui ui = Ui.getInstance();
 
     /**
-     * Directs logging to a file
+     * Initializes logging to a file called log.txt.
+     * Logs are written using a simple formatter.
      */
     private static void initLogging() {
         logger = Logger.getLogger("TripBuddy");
@@ -32,29 +38,27 @@ public class TripBuddy {
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
         } catch (IOException e) {
-            ExceptionHandler.handleException(e);
+            ui.printMessage(ExceptionHandler.handleException(e));
         }
     }
 
     /**
-     * Runs the main program loop, loads all data, and handles user input.
+     * Starts the TripBuddy application.
+     * Loads data, prints the welcome message, and processes user commands until quit is entered.
      */
     public static void run() {
         initLogging();
-        Ui ui = new Ui();
-        ExpenseManager expenseManager;
-
+        DataHandler dataHandler = DataHandler.getInstance();
         try {
-            expenseManager = DataHandler.loadData(FILE_PATH, ui);
-            ui.printMessage("Loading expense data from " + FILE_PATH);
+            String message = dataHandler.loadData(FILE_PATH);
+            ui.printMessage(message + "Loaded expense data from " + FILE_PATH);
         } catch (FileNotFoundException e) {
             ui.printMessage(ExceptionHandler.handleFileNotFoundException(e));
-            expenseManager = new ExpenseManager();
         } catch (DataLoadingException e) {
-            ui.printMessage(e.getMessage());
-            expenseManager = new ExpenseManager();
+            ui.printMessage(ExceptionHandler.handleException(e));
         }
-        InputHandler inputHandler = new InputHandler(logger, expenseManager);
+        ExpenseManager expenseManager = ExpenseManager.getInstance();
+        InputHandler inputHandler = InputHandler.getInstance(logger);
         ui.printStartMessage();
         while (true) {
             String userInput = ui.getUserInput();
@@ -64,19 +68,21 @@ public class TripBuddy {
 
             if (inputHandler.isQuitCommand(userInput)) {
                 try {
-                    DataHandler.saveData(FILE_PATH, expenseManager);
-                    ui.printMessage("Saved data to " + FILE_PATH);
+                    String message = dataHandler.saveData(FILE_PATH, expenseManager);
+                    ui.printMessage(message);
                 } catch (IOException e) {
-                    ExceptionHandler.handleException(e);
+                    ui.printMessage(ExceptionHandler.handleException(e));
                 }
                 ui.printEndMessage();
                 return;
             }
             ui.printMessage(inputHandler.handleUserInput(userInput));
-
         }
     }
 
+    /**
+     * The main method that launches the application.
+     */
     public static void main(String[] args) {
         TripBuddy.run();
     }

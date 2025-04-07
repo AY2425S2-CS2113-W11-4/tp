@@ -192,6 +192,7 @@ and lowest expenses, TripBuddy empowers users to make informed financial decisio
 | v2.0    | user            | see minimum and maximum expense        | identify the smallest and largest purchases I've made           |
 | v2.0    | user            | add an expense in a different currency | add expenses in the local currency and not think about the rate |
 | v2.0    | user            | save/load the information of a trip    | i don't have to keep adding expenses every time                 |
+| v2.1    | user            | set the timestamp of an expense        | accurately reflect when the expense actually occurred           |
 
 ## Non-Functional Requirements
 
@@ -207,21 +208,50 @@ and lowest expenses, TripBuddy empowers users to make informed financial decisio
 entity.
 * *budget* – a spending limit set by the user to track expenses and manage finances during a trip.
 * *category* – a classification assigned to an expense (e.g., Food, Transport) to help users organize their spending.
+* *currency* – The unit of money used for recording and viewing expenses. All values are shown in a single reference currency.
+* *base currency* – The default currency used to calculate and display all financial information consistently.
+* *timestamp* – The date and time when an expense was recorded or changed.
 
 ## Instructions for manual testing
 
-Testing Budgeting Features:
-* Set a budget using the set-budget command and verify that the amount is correct.
-* Add and delete expenses to confirm that budget calculations update correctly.
-* Use the adjust-budget command to modify the budget and ensure that all dependent calculations reflect the changes.
+Testing Budgeting Features
+- Set a budget using the `set-budget` command and verify that the displayed amount is correct.
+- Add and delete expenses to ensure that the remaining budget updates accordingly.
+- Exceed the budget and check if the system notifies the user about overspending.
+- Change the base currency using `set-base-currency` and confirm that the budget and expenses are recalculated properly.
 
-Testing Command Handling:
-* Run all supported commands and check for correct execution and expected output.
-* Input invalid commands and confirm that proper error messages are displayed.
+Testing Expense Management
+- Add expenses using `add-expense` with and without categories.
+- Use `list-expense` to verify that all expenses are listed with accurate amounts.
+- Apply `create-category` and assign categories using `set-category`.
+- Use `search` to find expenses by partial name match.
+- Use `set-time` to modify the timestamp of an existing expense and confirm the updated value is reflected.
+- Use `filter-date` with a valid date range to ensure that only expenses within the range are shown.
+- Use `max-expense` and `min-expense` to verify the correct expense is identified.
 
-Verifying UI Responses:
-* Ensure that the CLI provides appropriate feedback for each user action.
-* Test edge cases such as invalid formats and unexpected inputs.
+Testing Data Persistence
+- Add multiple expenses and categories, then quit the program to trigger auto-saving.
+- Restart the program and confirm that all data was correctly loaded from the save file.
+- Intentionally corrupt the save file or remove fields and verify that the system handles this gracefully with a message.
 
-Checking Exception Handling:
-* Deliberately introduce invalid data to ensure the system appropriately handles errors without crashing.
+Testing Command Handling
+- Execute each supported command and confirm it performs as expected.
+- Provide invalid commands, missing arguments, or incorrect formats and ensure the system responds with clear error messages.
+- Include extra inputs (e.g., `quit now`) and confirm the app ignores them gracefully.
+
+Verifying CLI Feedback
+- Confirm that user actions result in clear and informative messages (e.g., budget set, expense added).
+- Test the welcome and exit messages on application start and quit.
+- Check that currency formatting, dates, and categories are consistently displayed.
+
+Checking Error and Exception Handling
+- Try adding an expense with a missing name or duplicate name.
+- Provide a negative or very large number for budget or amount.
+- Assign a category to a non-existent expense.
+- Use an incorrect timestamp format in `set-time` or `filter-date`.
+- Force a save/load operation on invalid data and ensure the program remains stable.
+
+Edge Case and Robustness Testing
+- Add extremely long or empty strings for names and categories.
+- Use mixed-case, numeric, or symbolic inputs.
+- Run commands with missing flags, extra spaces, or unexpected inputs to ensure the app handles them cleanly.

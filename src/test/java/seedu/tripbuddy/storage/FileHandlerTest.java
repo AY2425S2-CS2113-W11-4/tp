@@ -20,6 +20,7 @@ public class FileHandlerTest {
 
     @Test
     public void testWriteAndReadJsonObject() throws IOException {
+        FileHandler fileHandler = FileHandler.getInstance();
         // Create a temporary file path.
         Path filePath = tempDir.resolve("test.json");
         String path = filePath.toString();
@@ -30,14 +31,14 @@ public class FileHandlerTest {
         jsonToWrite.put("value", 123);
 
         // Write the JSONObject to file.
-        String absolutePath = FileHandler.writeJsonObject(path, jsonToWrite);
+        String absolutePath = fileHandler.writeJsonObject(path, jsonToWrite);
 
         // Verify that the file exists.
         File file = new File(absolutePath);
         assertTrue(file.exists(), "File should exist after writing.");
 
         // Read the JSONObject from the file.
-        JSONObject jsonRead = FileHandler.readJsonObject(path);
+        JSONObject jsonRead = fileHandler.readJsonObject(path);
 
         // Verify that the read JSON contains the expected values.
         assertEquals("Test", jsonRead.getString("name"), "The name should match.");
@@ -51,7 +52,7 @@ public class FileHandlerTest {
 
         // Expect FileNotFoundException when trying to read a file that doesn't exist.
         assertThrows(FileNotFoundException.class, () -> {
-            FileHandler.readJsonObject(nonExistentPath);
+            FileHandler.getInstance().readJsonObject(nonExistentPath);
         });
     }
 
@@ -67,7 +68,7 @@ public class FileHandlerTest {
         jsonToWrite.put("key", "value");
 
         // Write the JSONObject to file.
-        String absolutePath = FileHandler.writeJsonObject(path, jsonToWrite);
+        String absolutePath = FileHandler.getInstance().writeJsonObject(path, jsonToWrite);
 
         // Verify that the file now exists (and thus that the parent directories were created).
         File file = new File(absolutePath);
