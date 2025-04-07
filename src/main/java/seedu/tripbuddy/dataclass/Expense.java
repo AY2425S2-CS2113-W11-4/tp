@@ -15,7 +15,7 @@ import seedu.tripbuddy.framework.ExpenseManager;
 public class Expense {
 
     /** Formatter for consistent date-time representation across the app. */
-    static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private String name;
     private double amount;
     private String category;
