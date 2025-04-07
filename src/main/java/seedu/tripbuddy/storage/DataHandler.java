@@ -17,8 +17,13 @@ import java.util.logging.Logger;
 
 public class DataHandler {
 
-    private static Logger LOGGER = null;
+    private static Logger logger = null;
     private FileHandler fileHandler;
+
+    public DataHandler(Logger log) {
+        logger = logger;
+        fileHandler = new FileHandler(logger);
+    }
 
 
     private static double round2Digits(double x) {
@@ -26,10 +31,6 @@ public class DataHandler {
         return (int) (x * 100 + .5) / 100.;
     }
 
-    public DataHandler(Logger logger) {
-        LOGGER = logger;
-        fileHandler = new FileHandler(logger);
-    }
 
     /**
      * Saves the current {@link ExpenseManager} info into a json file.
@@ -40,7 +41,7 @@ public class DataHandler {
         root.put("currency", expenseManager.getBaseCurrency().toString());
         root.put("budget", round2Digits(expenseManager.getBudget()));
 
-        LOGGER.log(Level.INFO, "budget converted");
+        logger.log(Level.INFO, "budget converted");
 
         JSONArray categoriesArr = new JSONArray();
         for (String category : expenseManager.getCategories()) {
@@ -48,17 +49,17 @@ public class DataHandler {
         }
         root.put("categories", categoriesArr);
 
-        LOGGER.log(Level.INFO, "categories converted");
+        logger.log(Level.INFO, "categories converted");
 
         JSONArray expensesArr = new JSONArray();
         for (Expense expense : expenseManager.getExpenses()) {
             JSONObject expObj = expense.toJSON();
             expensesArr.put(expObj);
-            LOGGER.log(Level.INFO, "expense converted: " + expObj);
+            logger.log(Level.INFO, "expense converted: " + expObj);
         }
         root.put("expenses", expensesArr);
 
-        LOGGER.log(Level.INFO, "expenses converted");
+        logger.log(Level.INFO, "expenses converted");
 
         String absPath = fileHandler.writeJsonObject(path, root);
         return "Saved data to file:\n\t" + absPath;

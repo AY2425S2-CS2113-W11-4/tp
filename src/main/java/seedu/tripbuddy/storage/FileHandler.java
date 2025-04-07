@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 
 public class FileHandler {
 
-    private static Logger LOGGER = null;
+    private static Logger logger = null;
 
-    public FileHandler(Logger logger) {
-        LOGGER = logger;
+    public FileHandler(Logger log) {
+        logger = log;
     }
 
     public JSONObject readJsonObject(String path) throws FileNotFoundException, JSONException {
@@ -40,7 +40,7 @@ public class FileHandler {
             file.getParentFile().mkdirs();
         }
 
-        LOGGER.log(Level.INFO, "folder init done");
+        logger.log(Level.INFO, "folder init done");
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(data.toString(4));
