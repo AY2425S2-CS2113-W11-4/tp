@@ -20,8 +20,8 @@ public class DataHandler {
     private static Logger logger = null;
     private FileHandler fileHandler;
 
-    public DataHandler(Logger log) {
-        logger = logger;
+    public DataHandler(Logger logger) {
+        this.logger = logger;
         fileHandler = new FileHandler(logger);
     }
 
