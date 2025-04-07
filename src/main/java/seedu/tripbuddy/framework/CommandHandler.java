@@ -16,24 +16,13 @@ import java.util.List;
  */
 public class CommandHandler {
 
-    private static CommandHandler instance = null;
     private final ExpenseManager expenseManager;
 
     /**
      * Private constructor to enforce singleton pattern.
      */
-    private CommandHandler() {
+    public CommandHandler() {
         this.expenseManager = ExpenseManager.getInstance();
-    }
-
-    /**
-     * Returns the singleton instance of {@code CommandHandler}.
-     */
-    public static CommandHandler getInstance() {
-        if (instance == null) {
-            instance = new CommandHandler();
-        }
-        return instance;
     }
 
     /**

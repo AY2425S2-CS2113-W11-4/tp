@@ -27,7 +27,7 @@ public class ExpenseManager {
     private double totalExpense;
     private final HashSet<String> categories = new HashSet<>();
     private final ArrayList<Expense> expenses = new ArrayList<>();
-    private final HashSet<String> expenseNames = new HashSet<>();
+
 
     /**
      * Private constructor for singleton pattern. Initializes with a given budget.
@@ -147,7 +147,6 @@ public class ExpenseManager {
     public void clearExpensesAndCategories() {
         expenses.clear();
         categories.clear();
-        expenseNames.clear();
         totalExpense = 0;
     }
 
@@ -189,12 +188,15 @@ public class ExpenseManager {
         if (name.isEmpty()) {
             throw new InvalidArgumentException("", "Expense name should not be empty.");
         }
-        if (expenseNames.contains(name)) {
-            throw new InvalidArgumentException(name, "Expense name already exists.");
+
+        // check whether the expense name is already used
+        for (Expense expense : expenses) {
+            if (expense.getName().equals(name)) {
+                throw new InvalidArgumentException(name, "Expense name already exists.");
+            }
         }
         Expense expense = new Expense(name, amount);
         expenses.add(expense);
-        expenseNames.add(name);
         totalExpense += amount;
     }
 
@@ -211,15 +213,17 @@ public class ExpenseManager {
         if (name.isEmpty()) {
             throw new InvalidArgumentException("", "Expense name should not be empty.");
         }
-        if (expenseNames.contains(name)) {
-            throw new InvalidArgumentException(name, "Expense name already exists.");
+        // check whether the expense name is already used
+        for (Expense expense : expenses) {
+            if (expense.getName().equals(name)) {
+                throw new InvalidArgumentException(name, "Expense name already exists.");
+            }
         }
         if (!categories.contains(categoryName)) {
             createCategory(categoryName);
         }
         Expense expense = new Expense(name, amount, categoryName);
         expenses.add(expense);
-        expenseNames.add(name);
         totalExpense += amount;
     }
 
@@ -235,10 +239,11 @@ public class ExpenseManager {
         if (name.isEmpty()) {
             throw new JSONException("Expense name should not be empty.");
         }
-        if (expenseNames.contains(name)) {
-            throw new JSONException("Expense \"" + name + "\" already exists. Skipping");
+        for (Expense exp : expenses) {
+            if (exp.getName().equals(name)) {
+                throw new JSONException("Expense name already exists.");
+            }
         }
-
         double amount = expense.getAmount();
         if (amount <= 0) {
             throw new JSONException('"' + name + "\": Expense amount should be more than 0.");
@@ -254,7 +259,6 @@ public class ExpenseManager {
         }
 
         expenses.add(expense);
-        expenseNames.add(name);
         totalExpense += amount;
     }
 
@@ -282,7 +286,6 @@ public class ExpenseManager {
         for (Expense expense : expenses) {
             if (expense.getName().equalsIgnoreCase(expenseName)) {
                 expenses.remove(expense);
-                expenseNames.remove(expenseName);
                 totalExpense -= expense.getAmount();
                 return;
             }

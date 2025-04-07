@@ -22,8 +22,10 @@ class UiTest {
         // Redirect System.out to capture output.
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        // Instantiate Ui
-        ui = Ui.getInstance();
+        ui = new Ui();
+        // Clear the ExpenseManager state.
+        ExpenseManager expenseManager = ExpenseManager.getInstance();
+        expenseManager.clearExpensesAndCategories();
     }
 
     @AfterEach

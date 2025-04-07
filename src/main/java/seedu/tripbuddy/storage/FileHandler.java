@@ -13,20 +13,10 @@ import java.util.logging.Logger;
 
 public class FileHandler {
 
-    private static FileHandler instance = null;
+    private static Logger logger = null;
 
-    private static final Logger LOGGER = Logger.getLogger("TripBuddy");
-
-    private FileHandler() {}
-
-    /**
-     * Gets a singleton instance of {@link FileHandler}.
-     */
-    public static FileHandler getInstance() {
-        if (instance == null) {
-            instance = new FileHandler();
-        }
-        return instance;
+    public FileHandler(Logger log) {
+        logger = log;
     }
 
     public JSONObject readJsonObject(String path) throws FileNotFoundException, JSONException {
@@ -50,7 +40,7 @@ public class FileHandler {
             file.getParentFile().mkdirs();
         }
 
-        LOGGER.log(Level.INFO, "folder init done");
+        logger.log(Level.INFO, "folder init done");
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(data.toString(4));

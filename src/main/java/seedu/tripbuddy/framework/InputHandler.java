@@ -18,32 +18,17 @@ import java.util.logging.Logger;
  */
 public class InputHandler {
 
-    private static InputHandler instance = null;
-
-    private final CommandHandler commandHandler;
-    private final Parser parser;
+    private CommandHandler commandHandler;
+    private Parser parser;
 
     /**
      * Private constructor for singleton pattern. Initializes the command handler and parser.
      *
      * @param logger Logger used for parsing debug output.
      */
-    private InputHandler(Logger logger) {
-        this.commandHandler = CommandHandler.getInstance();
-        this.parser = Parser.getInstance(logger);
-    }
-
-    /**
-     * Returns a singleton instance of {@code InputHandler}.
-     *
-     * @param logger Logger instance for parser initialization.
-     * @return The singleton {@code InputHandler}.
-     */
-    public static InputHandler getInstance(Logger logger) {
-        if (instance == null) {
-            instance = new InputHandler(logger);
-        }
-        return instance;
+    public InputHandler(Logger logger) {
+        this.commandHandler = new CommandHandler();
+        this.parser = new Parser(logger);
     }
 
     /**

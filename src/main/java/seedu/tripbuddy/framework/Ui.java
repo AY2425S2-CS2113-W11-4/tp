@@ -8,8 +8,6 @@ import java.util.Scanner;
  */
 public class Ui {
 
-    private static Ui instance = null;
-
     private static final String LINE =
             "____________________________________________________________";
     private static final String START_MESSAGE =
@@ -21,18 +19,7 @@ public class Ui {
     /**
      * Private constructor for singleton pattern.
      */
-    private Ui() {}
-
-    /**
-     * Returns the singleton instance of {@code Ui}.
-     * If the instance does not exist, it is created.
-     */
-    public static Ui getInstance() {
-        if (instance == null) {
-            instance = new Ui();
-        }
-        return instance;
-    }
+    public Ui() {}
 
     /**
      * Prints a line separator for better readability.

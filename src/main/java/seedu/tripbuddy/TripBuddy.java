@@ -23,7 +23,10 @@ public class TripBuddy {
     private static final String FILE_PATH = "tripbuddy_data.json";
 
     private static Logger logger;
-    private static final Ui ui = Ui.getInstance();
+    private static Ui ui;
+    private static final ExpenseManager expenseManager = ExpenseManager.getInstance();
+    private static DataHandler dataHandler;
+    private static InputHandler inputHandler;
 
     /**
      * Initializes logging to a file called log.txt.
@@ -33,10 +36,9 @@ public class TripBuddy {
         logger = Logger.getLogger("TripBuddy");
         logger.setUseParentHandlers(false);
         try {
-            FileHandler fh = new FileHandler(LOG_PATH);
+            FileHandler fh = new FileHandler(LOG_PATH, true); // 'true' to append logs
+            fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
         } catch (IOException e) {
             ui.printMessage(ExceptionHandler.handleException(e));
         }
@@ -47,31 +49,39 @@ public class TripBuddy {
      * Loads data, prints the welcome message, and processes user commands until quit is entered.
      */
     public static void run() {
+        // Initialize logger first
         initLogging();
-        DataHandler dataHandler = DataHandler.getInstance();
+
+        dataHandler = new DataHandler(logger);
+        inputHandler = new InputHandler(logger);
+        ui = new Ui();
+
+        // Load data
         try {
             String message = dataHandler.loadData(FILE_PATH);
-            ui.printMessage(message + "Loaded expense data from " + FILE_PATH);
+            ui.printMessage(message + " Loaded expense data from " + FILE_PATH);
         } catch (FileNotFoundException e) {
             ui.printMessage(ExceptionHandler.handleFileNotFoundException(e));
+            logger.severe("File not found: " + e.getMessage());
         } catch (DataLoadingException e) {
             ui.printMessage(ExceptionHandler.handleException(e));
+            logger.severe("Data loading error: " + e.getMessage());
         }
-        ExpenseManager expenseManager = ExpenseManager.getInstance();
-        InputHandler inputHandler = InputHandler.getInstance(logger);
+
+        // Start user interaction loop
         ui.printStartMessage();
         while (true) {
-            String userInput = ui.getUserInput();
+            String userInput = ui.getUserInput().trim();
             if (userInput.isEmpty()) {
                 continue;
             }
-
             if (inputHandler.isQuitCommand(userInput)) {
                 try {
                     String message = dataHandler.saveData(FILE_PATH, expenseManager);
                     ui.printMessage(message);
                 } catch (IOException e) {
                     ui.printMessage(ExceptionHandler.handleException(e));
+                    logger.severe("Error saving data: " + e.getMessage());
                 }
                 ui.printEndMessage();
                 return;

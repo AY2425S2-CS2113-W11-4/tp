@@ -21,7 +21,7 @@ class ParserTest {
         // Create a logger instance for testing purposes.
         testLogger = Logger.getLogger("TestLogger");
         // Instantiate Parser with the injected logger.
-        parser = Parser.getInstance(testLogger);
+        parser = new Parser(testLogger);
     }
 
     @Test
@@ -83,7 +83,6 @@ class ParserTest {
 
     @Test
     public void parseCommand_setTimeCommand_success() throws Exception {
-        Parser parser = Parser.getInstance(null);
         Command cmd = parser.parseCommand("set-time lunch -t 2024-04-01 12:00:00");
         assertEquals(Keyword.SET_TIME, cmd.getKeyword());
         assertEquals("lunch", cmd.getOpt(""));
