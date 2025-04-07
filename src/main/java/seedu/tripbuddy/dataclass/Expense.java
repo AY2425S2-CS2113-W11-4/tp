@@ -130,6 +130,20 @@ public class Expense {
     }
 
     /**
+     * Clears the category of the expense, so the expense no longer belongs to any category.
+     */
+    public void clearCategory() {
+        this.category = null;
+    }
+
+    /**
+     * Returns boolean describing whether the expense is associated with a category.
+     */
+    public boolean belongsToCategory() {
+        return category != null;
+    }
+
+    /**
      * Returns the timestamp of when the expense was recorded.
      *
      * @return the timestamp as a {@link LocalDateTime}

@@ -156,7 +156,7 @@ public class ExpenseManager {
      * @param budget The budget amount to set.
      */
     public void setBudget(double budget) {
-        assert budget > 0 : "Budget must be positive";
+        assert budget > 0 : "Budget must be a positive integer";
         this.budget = budget;
     }
 
@@ -416,5 +416,80 @@ public class ExpenseManager {
             }
         }
         return matchingExpenses;
+    }
+
+    /**
+     * Deletes a category from the list of categories if it exists and has no associated expenses.
+     *
+     * @param category The name of the category to delete.
+     * @return {@code true} if the category was successfully deleted (i.e., it existed and had no associated expenses),
+     *         {@code false} if the category has existing expenses and could not be deleted.
+     * @throws InvalidArgumentException if the category name is empty or does not exist in the current category list.
+     */
+    public boolean deleteCategory(String category) throws InvalidArgumentException {
+        if (category.isEmpty()) {
+            throw new InvalidArgumentException("", "Category name should not be empty.");
+        }
+        if (!categories.contains(category)) {
+            throw new InvalidArgumentException(category, "Category with name `" + category + "` does not exist.");
+        }
+        List<Expense> expenses = getExpensesByCategory(category);
+        if (expenses.isEmpty()) {
+            categories.remove(category);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Clears the category of an expense, so the expense no longer belongs to any category.
+     *
+     * @param expenseName The name of the expense to clear the category of.
+     * @return The name of the old category that the expense was just cleared of. Empty string if expense did not
+     * previously belong to any category.
+     * @throws InvalidArgumentException if the category name is empty or does not exist in the current category list.
+     */
+    public String clearCategory(String expenseName) throws InvalidArgumentException {
+        if (expenseName.isEmpty()) {
+            throw new InvalidArgumentException("", "Expense name should not be empty.");
+        }
+        for (Expense expense : expenses) {
+            if (expense.getName().equalsIgnoreCase(expenseName)) {
+                boolean belongsToCategory = expense.belongsToCategory();
+                if (belongsToCategory) {
+                    String oldCategory = expense.getCategory();
+                    expense.clearCategory();
+                    return oldCategory;
+                } else {
+                    return "";
+                }
+            }
+        }
+        throw new InvalidArgumentException(expenseName, "Expense with name `" + expenseName + "` does not exist.");
+    }
+
+    /**
+     * Edits the amount associated with an expense, overriding the previous amount.
+     *
+     * @param expenseName The name of the expense to edit.
+     * @param amount The new amount to set for the expense. Must be a non-negative value.
+     * @throws InvalidArgumentException if the expense name is empty, the amount is negative,
+     *         or no expense with the given name exists.
+     */
+    public void editExpenseAmount(String expenseName, double amount) throws InvalidArgumentException {
+        if (expenseName.isEmpty()) {
+            throw new InvalidArgumentException("", "Expense name should not be empty.");
+        }
+        if (amount <= 0) {
+            throw new InvalidArgumentException("", "Amount should be a positive integer.");
+        }
+        for (Expense expense : expenses) {
+            if (expense.getName().equalsIgnoreCase(expenseName)) {
+                expense.setAmount(amount);
+                return;
+            }
+        }
+        throw new InvalidArgumentException(expenseName, "Expense with name `" + expenseName + "` does not exist.");
     }
 }
