@@ -4,45 +4,59 @@ skinparam classAttributeIconSize 0
 skinparam classIconSize 0
 
 
+package "user input"{
+    class Command {
+    - optMap: <String, String>
+    }
+
+    class InputHandler {
+
+    +isQuiteCommand(userInput: String): boolean
+    +handleUserInput(userInput: String): String
+    }
+    class CommandHandler {
+
+    }
+
+
+
+    enum "<<enumeration>> \n Keyword" as Keyword {
+        TUTORIAL
+        SET_BUDGET
+        ADJUST_BUDGET
+        VIEW_BUDGET
+        CREATE_CATEGORY
+        SET_CATEGORY
+        ADD_EXPENSE
+        DELETE_EXPENSE
+        LIST_EXPENSE
+        VIEW_HISTORY
+        MAX_EXPENSE
+        MIN_EXPENSE
+        FILTER_DATE
+        VIEW_CURRENCY
+        SEARCH
+        VIEW_CATEGORIES
+        CLEAR
+        }
+
+    class Option {
+    }
+
+    class Parser {
+
+    + isOpt(s: String): boolean
+    + parseCommand(cmdInput: String): Command
+    }
+
+
+}
+
+
 
 Command -> "keyword" Keyword
 Command -> "optList" Option: *
-
-
-class Command {
-- optMap: <String, String>
-}
-
-enum Keyword {
-    TUTORIAL
-    SET_BUDGET
-    ADJUST_BUDGET
-    VIEW_BUDGET
-    CREATE_CATEGORY
-    SET_CATEGORY
-    ADD_EXPENSE
-    DELETE_EXPENSE
-    LIST_EXPENSE
-    VIEW_HISTORY
-    MAX_EXPENSE
-    MIN_EXPENSE
-    FILTER_DATE
-    VIEW_CURRENCY
-    SEARCH
-    VIEW_CATEGORIES
-    CLEAR
-    }
-
-class Option {
-}
-
-class Parser {
-
-- <u>isOpt(s: String): boolean
-- <u>parseCommand(cmdInput: String): Command
-}
-
-
-
+InputHandler -> Parser
+InputHandler -> CommandHandler
 
 @enduml

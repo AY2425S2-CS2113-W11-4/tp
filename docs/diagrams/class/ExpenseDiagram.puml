@@ -3,54 +3,60 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam classIconSize 0
 
-ExpenseManager o--> Expense : expenses
+package expenses {
+    enum "<<enumeration>> \n Currency"  as Currency {
+      --
+      IDR
+      LAK
+      MYR
+      PHP
+      SGD
+      THB
+      VND
+      USD
+      EUR
+      JPY
+      GBP
+      ' Attributes
+      --
+      - name : String
+      - rate : double
+      ' Methods
+      --
+      + convert(amount: double) : double
+    }
 
-enum "<<enumeration>> \n Currency"  {
-  --
-  IDR
-  LAK
-  MYR
-  PHP
-  SGD
-  THB
-  VND
-  USD
-  EUR
-  JPY
-  GBP
-  ' Attributes
-  --
-  - name : String
-  - rate : double
-  ' Methods
-  --
-  + convert(amount: double) : double
-}
+    class Expense {
+      {static} FORMATTER : DateTimeFormatter
+      - name : String
+      - amount : double
+      - category : String
+      - dateTime : LocalDateTime
 
-class Expense {
-  {static} FORMATTER : DateTimeFormatter
-  - name : String
-  - amount : double
-  - category : String
-  - dateTime : LocalDateTime
+    }
 
-}
+    class "<<singleton>> \n ExpenseManager" as ExpenseManager {
+    - budget : double
+    - totalExpense: double
+    - categories[]: String[]
+    - baseCurrency: Currency
 
-class ExpenseManager {
-- <u> budget : double
-- <u> totalExpense: double
-- <u> categories[]: String[]
+    + createCategory(categoryName: String): void
+    + addExpense(name: String, amount: double): void
+    + addExpense(name: String, amount: double, (categoryName: String): void
+    + deleteExpense(id: int): void
+    + deleteExpense(expenseName: String): void
+    + getExpensesByCategory(category: String): Expense[]
+    + setExpenseCategory(expenseName: String, category: String): void
+    + getMaxExpense(): Expense
+    + getMinExpense(): Expense
+    + getExpensesByDateRange(start: LocalDateTime, end: LocalDateTime): Expense[]
+    }
+   }
 
-+ <u>createCategory(categoryName: String): void
-+ <u>addExpense(name: String, amount: double): void
-+ <u>addExpense(name: String, amount: double, (categoryName: String): void
-+ <u>deleteExpense(id: int): void
-+ <u>deleteExpense(expenseName: String): void
-+ <u>getExpensesByCategory(category: String): Expense[]
-+ <u>setExpenseCategory(expenseName: String, category: String): void
-+ <u>getMaxExpense(): Expense
-+ <u>getMinExpense(): Expense
-+ <u>getExpensesByDateRange(start: LocalDateTime, end: LocalDateTime): Expense[]
-}
+
+ExpenseManager *--> "expenses" Expense
+ExpenseManager --> "baseCurrency" Currency
+
 
 @enduml
