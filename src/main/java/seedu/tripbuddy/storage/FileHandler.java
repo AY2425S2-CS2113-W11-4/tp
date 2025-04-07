@@ -13,20 +13,10 @@ import java.util.logging.Logger;
 
 public class FileHandler {
 
-    private static FileHandler instance = null;
+    private static Logger LOGGER = null;
 
-    private static final Logger LOGGER = Logger.getLogger("TripBuddy");
-
-    private FileHandler() {}
-
-    /**
-     * Gets a singleton instance of {@link FileHandler}.
-     */
-    public static FileHandler getInstance() {
-        if (instance == null) {
-            instance = new FileHandler();
-        }
-        return instance;
+    public FileHandler(Logger logger) {
+        LOGGER = logger;
     }
 
     public JSONObject readJsonObject(String path) throws FileNotFoundException, JSONException {

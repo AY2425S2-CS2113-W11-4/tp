@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Handles user commands and returns result messages.
@@ -16,24 +17,13 @@ import java.util.List;
  */
 public class CommandHandler {
 
-    private static CommandHandler instance = null;
     private final ExpenseManager expenseManager;
 
     /**
      * Private constructor to enforce singleton pattern.
      */
-    private CommandHandler() {
+    public CommandHandler() {
         this.expenseManager = ExpenseManager.getInstance();
-    }
-
-    /**
-     * Returns the singleton instance of {@code CommandHandler}.
-     */
-    public static CommandHandler getInstance() {
-        if (instance == null) {
-            instance = new CommandHandler();
-        }
-        return instance;
     }
 
     /**

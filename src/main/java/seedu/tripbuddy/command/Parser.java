@@ -11,8 +11,6 @@ import java.util.logging.Logger;
  */
 public class Parser {
 
-    private static Parser instance = null;
-
     private final Logger logger;
 
     /**
@@ -20,23 +18,10 @@ public class Parser {
      *
      * @param logger the logger to be used during parsing
      */
-    private Parser(Logger logger) {
+    public Parser(Logger logger) {
         this.logger = logger;
     }
 
-    /**
-     * Returns the singleton instance of the parser.
-     * Initializes it with the given logger if it has not been created before.
-     *
-     * @param logger the logger to associate with the parser
-     * @return the singleton instance of {@code Parser}
-     */
-    public static Parser getInstance(Logger logger) {
-        if (instance == null) {
-            instance = new Parser(logger);
-        }
-        return instance;
-    }
 
     /**
      * Determines whether the given string represents an option (starts with {@code -}).

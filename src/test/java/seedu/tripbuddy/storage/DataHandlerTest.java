@@ -13,16 +13,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 class DataHandlerTest {
 
+    private DataHandler dataHandler;
+    private Logger testLogger;
+
     @BeforeEach
-    void initExpenseManager() {
+    void setUp() throws IOException {
+        // Initialize a test logger instance.
+        testLogger = Logger.getLogger("TestLogger");
+        dataHandler = new DataHandler(testLogger);
+        // Clear the ExpenseManager state.
         ExpenseManager expenseManager = ExpenseManager.getInstance();
         expenseManager.clearExpensesAndCategories();
     }
@@ -55,7 +64,7 @@ class DataHandlerTest {
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
         // Load the data.
-        DataHandler.getInstance().loadData(tempFile.getAbsolutePath());
+        dataHandler.loadData(tempFile.getAbsolutePath());
         ExpenseManager expenseManager = ExpenseManager.getInstance();
 
         // Verify the loaded state.
@@ -88,7 +97,7 @@ class DataHandlerTest {
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
         // Expect a DataLoadingException due to an invalid budget.
-        assertThrows(DataLoadingException.class, () -> DataHandler.getInstance().loadData(tempFile.getAbsolutePath()));
+        assertThrows(DataLoadingException.class, () -> dataHandler.loadData(tempFile.getAbsolutePath()));
     }
 
     @Test
@@ -104,7 +113,7 @@ class DataHandlerTest {
         tempFile.deleteOnExit();
         Files.write(tempFile.toPath(), root.toString().getBytes());
 
-        // Expect handled exception due to missing currency information.
-        assertAll(() -> DataHandler.getInstance().loadData(tempFile.getAbsolutePath()));
+        // Expect no exception thrown due to missing currency, handled gracefully.
+        assertDoesNotThrow(() -> dataHandler.loadData(tempFile.getAbsolutePath()));
     }
 }

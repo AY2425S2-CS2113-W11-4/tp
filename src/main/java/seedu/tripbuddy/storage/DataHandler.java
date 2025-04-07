@@ -17,27 +17,18 @@ import java.util.logging.Logger;
 
 public class DataHandler {
 
-    private static DataHandler instance = null;
-    private static final Logger LOGGER = Logger.getLogger("TripBuddy");
-    private final FileHandler fileHandler;
+    private static Logger LOGGER = null;
+    private FileHandler fileHandler;
 
-    private DataHandler() {
-        fileHandler = FileHandler.getInstance();
-    }
 
     private static double round2Digits(double x) {
         assert x > 0 && x <= Command.MAX_INPUT_VAL;
         return (int) (x * 100 + .5) / 100.;
     }
 
-    /**
-     * Gets a singleton instance of {@link DataHandler}.
-     */
-    public static DataHandler getInstance() {
-        if (instance == null) {
-            instance = new DataHandler();
-        }
-        return instance;
+    public DataHandler(Logger logger) {
+        LOGGER = logger;
+        fileHandler = new FileHandler(logger);
     }
 
     /**
