@@ -1,71 +1,51 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
-
-' Remove the default class icon
 skinparam classIconSize 0
 
+class TripBuddy
+class "    Ui     " as Ui
 
+package "user input"{
+    class InputHandler
+    class CommandHandler
+    class Parser
+}
 
-class InputHandler {
-  +<u>isQuitCommand(userInput: String): boolean
-  +<u>handleUserInput(userInput: String): void
+package "expenses" {
+class "<<singleton>> \n ExpenseManager" as ExpenseManager
+class Expense
+class "<<enumeration>> \n Currency" as Currency
 }
 
 
-class CommandHandler {
-+ <u>handleTutorial(): String
-+ <u>handleViewBudget(): String
-+ <u>handleSetBudget(budget: double): String
-+ <u>handleAdjustBudget(budget: double): String
-+ <u>handleCreateCategory(category: String): String
-+ <u>handleSetCategory(expenseName: String, category: String): String
-+ <u>handleDeleteExpense(expenseName: String): String
-+ <u>handleAddExpense(expenseName: String, amount: double, category: String): String
-+ <u>handleAddExpense(expenseName: String, amount: double, category: String, currencyStr: String): String
-+ <u>handleAddExpense(expenseName: String, amount: double): String
-+ <u>handleListExpense(category: String): String
-+ <u>handleViewHistory(): String
-+ <u>handleMaxExpense(): String
-+ <u>handleMinExpense(): String
-+ <u>handleFilterExpenseByDateRange(startStr: String, endStr: String): String
-+ <u>handlerViewCurrency(): String
-
+class TripBuddy {
+  -<u> initLogging(): void
+  +<u>run(): void
+  +main(): void
 }
 
-class FileHandler {
-- FILE_PATH: String
----
-- <u> readJsonObject: JSONObject
-- <u> writeJsonObject: void
-- <u> saveData: void
-- <u> loadData: void
-}
-
-class Ui {
-- <u> LINE: String
-- <u> START_MESSAGE: String
-- <u> END_MESSAGE: String
-- <u> scanner: Scanner
-
-+ <u>printLineSeparator(): void
-+ <u>printStartMessage(): void
-+ <u>getUserInput(): String
-+ <u>printEndMessage(): void
-+ <u>printMessage(Message: String): void
-
-
-}
-
-class TripBuddy{
-- <u> DEFALUT_BUDGET=1000
-
-+ <u>run(): void
-+ <u>main(): void
-
+package "storage" {
+class DataHandler
+class FileHandler
 }
 
 
+class Ui
+
+
+TripBuddy --> Ui
+TripBuddy --> InputHandler
+InputHandler --> CommandHandler
+InputHandler --> Parser
+TripBuddy --> ExpenseManager
+CommandHandler -->ExpenseManager
+ExpenseManager --> "baseCurrency" Currency
+ExpenseManager *--> "expenses" Expense
+DataHandler --> FileHandler
+TripBuddy --> DataHandler
 
 @enduml
+
+
 

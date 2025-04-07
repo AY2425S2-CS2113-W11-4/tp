@@ -13,56 +13,52 @@ This section describes some details on the design.
 
 TripBuddy allows user interactions via a CLI, which is activated by `TripBuddy`.
 
-The main framework consists of four layers: `CommandHandler`, `ExpenseManager`, `InputHandler` and `Ui`.
+The main framework consists of four layers: `Ui`, `Logic`, `Model` and `Storage`.
 
-<img src="diagrams/class/TripBuddyClassDiagram.png" alt="GeneralDesign" width="700">
+<img src="diagrams/architecture_diagram.jpg" alt="GeneralDesign" width="700">
 
 This layered design results in less conflicts while developing multiple
 features, as well as ensuring testability of different modules.
 
-### ExpenseManager
+In a high level, we can find the folowing classes:  
 
-`ExpenseManager` stores all user data, and has direct CRUD access to them. It saves the **budget**, the **total expense** 
-of the user so far, and the list of **categories**. 
+<div style="text-align: center;">
+  <img src="diagrams/class/TripBuddyClassDiagram.png" alt="GeneralDesign" width="200">
+</div>
 
-Return values of methods of `ExpenseManager` are unprocessed, i.e. not parsed
-into `String` or other formats for UI output. 
+### Ui 
+This is made of one class: `Ui`. 
 
-<img src="diagrams/class/ExpenseDiagram.png" alt="Expense Design" width="300">
 
-It manipulates the array of expenses and has methods to do the following tasks:
-* Adds an expense 
-* Deletes an expense
-* Retrieves the maximum expense
-* Retrieves the minimum expense
-* Retrieves expenses by category or date
+The `Ui` class is responsible for displaying messages to the user via the command-line interface (CLI). It handles:
+* Printing prompts and responses for user interactions.
+* Displaying success and error messages.
+* Formatting outputs for clarity and readability.
+* Ensuring smooth user experience by maintaining a consistent UI flow.
 
-#### Expense
-This is a class that saves the data of a specific expense made by the user. It holds important information such as
-the name, the amount and the date the expenditure was made. The use of the category is optional.
 
-The amount of the expense is calculated in the base currency. You can change the base currency using the command 
-`set-base-currency`. 
+### Logic - User Input
+These classes are responsible for making sense of the user's input and creating 
+`Command`s that will be useful for the model.
 
-#### Currency
-This is an enumeration class explaining all the available currencies. The base currency is the one whose exchange rate
-is one. The default base currency is SGD. 
+The following classes are the ones dealing with the logic. 
 
-### CommandHandler
+
+#### CommandHandler
 
 `CommandHandler` is responsible for the following tasks:
-- Collecting and manipulating data from `ExpenseManager` 
+- Collecting and manipulating data from `ExpenseManager`
 
 - Processing the output into `String` messages to be shown on UI
 
-Parameters of `CommandHandler` methods should be parsed by `InputHandler` already. Every method corresponds to a 
-command that can be done in the system. 
+Parameters of `CommandHandler` methods should be parsed by `InputHandler` already. Every method corresponds to a
+command that can be done in the system.
 
 For example, in the following sequence diagram, we show how `handlerAddExpense` works.
 <img src="diagrams/sequence/AddExpense.png" alt="Add Expense Diagram" width=600>
 
 
-### InputHandler
+#### InputHandler
 
 `InputHandler` is responsible for the following tasks:
 
@@ -72,38 +68,79 @@ For example, in the following sequence diagram, we show how `handlerAddExpense` 
 
 - Handling exceptions caused by user actions.
 
-Inside this logic, we also find other classes. 
+Inside this logic, we also find other classes.
 
 <img src="diagrams/class/CommandDiagram.png" alt="Command Classes" width=400>
 
-#### Command
-This class keeps the information of a Command, such as, `view-currency` or `add-expense`. 
-It has the following attributes: 
+##### Command
+This class keeps the information of a Command, such as, `view-currency` or `add-expense`.
+It has the following attributes:
 - Keyword: this keeps the information of the type of command (eg. `view-currency`)
 - OptList: this keeps a list with the possible optional tokens (eg. `add-expense AMOUNT CURRENCY`)
 - OptMap: this keeps information about the optional tokens. The keys are the names of the optional values
   (eg. '-c' if we want to input a currency when using 'add-expense') and the values are the actual values inputted
-by the user. 
+  by the user.
 
-#### Keyword
+##### Keyword
 This is an enumeration that indicates the different types of commands there are available.
 
 #### Option
 This indicates the different arguments a command can have.  
-Note: if their value is empty ("") they are mandatory arguments. 
+Note: if their value is empty ("") they are mandatory arguments.
 
 #### Parser
 The main tasks for this class are to:
 * Parse the user's input to a `Command` object
-* Check whether an argument is optional or not 
+* Check whether an argument is optional or not
 
-### Ui
 
-The `Ui` class is responsible for displaying messages to the user via the command-line interface (CLI). It handles:
-* Printing prompts and responses for user interactions.
-* Displaying success and error messages.
-* Formatting outputs for clarity and readability.
-* Ensuring smooth user experience by maintaining a consistent UI flow.
+### Model - Expenses
+In order to implement the model of the app, we have used an `ExpenseManager` that keeps the information of the 
+trip expenses, together with the `Expense` class, and `Currency` enumeration. 
+
+<div style="text-align: center;">
+  <img src="diagrams/class/ExpenseDiagram.png" alt="GeneralDesign" width="400">
+</div>
+
+
+#### ExpenseManager
+
+`ExpenseManager` stores all user data, and has direct CRUD access to them. It saves the **budget**, the **total expense**
+of the user so far, and the list of **categories**.
+
+Using a singleton for the ExpenseManager was a design decision aimed at ensuring that there's only one consistent 
+source of truth for all expense-related data throughout the application. In a smaller application, using a singleton 
+minimizes the complexity of passing instances around. 
+
+Return values of methods of `ExpenseManager` are unprocessed, i.e. not parsed
+into `String` or other formats for UI output.
+
+
+
+It manipulates the array of expenses and has methods to do the following tasks:
+* Adds an expense
+* Deletes an expense
+* Retrieves the maximum expense
+* Retrieves the minimum expense
+* Retrieves expenses by category or date
+
+#### Expense
+This is a class that saves the data of a specific expense made by the user. It holds important information such as
+the name, the amount and the date the expenditure was made. The use of the category is optional.
+
+The amount of the expense is calculated in the base currency. You can change the base currency using the command
+`set-base-currency`.
+
+#### Currency
+This is an enumeration class explaining all the available currencies. The base currency is the one whose exchange rate
+is one. The default base currency is SGD.
+
+
+
+
+### Storage 
+
+
 
 ### Exceptions 
 We have defined different exception types to ensure that all errors are properly covered. 
