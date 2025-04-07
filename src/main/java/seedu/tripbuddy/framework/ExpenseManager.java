@@ -447,7 +447,7 @@ public class ExpenseManager {
      *
      * @param expenseName The name of the expense to clear the category of.
      * @return The name of the old category that the expense was just cleared of. Empty string if expense did not
-     * previously belong to any category.
+     *          previously belong to any category.
      * @throws InvalidArgumentException if the category name is empty or does not exist in the current category list.
      */
     public String clearCategory(String expenseName) throws InvalidArgumentException {
