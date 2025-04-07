@@ -21,7 +21,7 @@ public class InputHandlerTest {
         ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
         expenseManager.clearExpensesAndCategories();
         // Instantiate InputHandler with the injected logger and expenseManager.
-        inputHandler = InputHandler.getInstance(testLogger);
+        inputHandler = new InputHandler(testLogger);
     }
 
     @Test
