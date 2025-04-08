@@ -38,6 +38,8 @@ travelers to log expenses, categorize them, and view a summary of their spending
   * `clear-category`
   * `edit-amount`
   * `quit`
+* Wrote the **FAQ** section.
+* Wrote the **Command Summary** section.
 
 ### Contributions to the DG
 
