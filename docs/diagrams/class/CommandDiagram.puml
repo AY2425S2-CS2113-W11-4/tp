@@ -1,24 +1,43 @@
 @startuml
+top to bottom direction
 hide circle
 skinparam classAttributeIconSize 0
 skinparam classIconSize 0
 
-
-package "user input"{
+package "user input" {
     class Command {
-    - optMap: <String, String>
+        - optMap: <String, String>
+
+        +addOption(option: Option): void
+        +hasOpt(opt: String): boolean
+        +parseDouble(opt: String): Option
     }
 
     class InputHandler {
-
-    +isQuiteCommand(userInput: String): boolean
-    +handleUserInput(userInput: String): String
+        + isQuitCommand(userInput: String): boolean
+        + handleUserInput(userInput: String): String
     }
+
     class CommandHandler {
-
+        + handleTutorial(): String
+        + handleViewBudget(): String
+        + handleSetBudget(budget: double): String
+        + handleCreateCategory(category: String): String
+        + handleSetCategory(expenseName: String, category: String): String
+        + handleDeleteExpense(expenseName: String): String
+        + handleAddExpense(expenseName: String, amount: double, category: String): String
+        + handleAddExpense(expenseName: String, amount: double): String
+        + handleListExpense(category: String): String
+        + handleMaxExpense(): String
+        + handleMinExpense(): String
+        + handleFilterExpenseByDateRange(startStr: String, endStr: String): String
+        + handleViewCurrency(): String
+        + handleSearch(searchWord: String): String
+        + handleViewCategories(): String
+        + handleClearAll(): String
+        + handleSetBaseCurrency(baseCurrency: String): String
+        + handleSetTime(expenseName: String, timestampStr: String): String
     }
-
-
 
     enum "<<enumeration>> \n Keyword" as Keyword {
         TUTORIAL
@@ -38,25 +57,27 @@ package "user input"{
         SEARCH
         VIEW_CATEGORIES
         CLEAR
-        }
+    }
 
     class Option {
+    -opt: String
+    -val: String
     }
 
     class Parser {
-
-    + isOpt(s: String): boolean
-    + parseCommand(cmdInput: String): Command
+        + isOpt(s: String): boolean
+        + parseCommand(cmdInput: String): Command
     }
-
-
 }
-
-
 
 Command -> "keyword" Keyword
 Command -> "optList" Option: *
-InputHandler -> Parser
-InputHandler -> CommandHandler
+InputHandler -> "parser" Parser
+InputHandler -> "commandHandler" CommandHandler
+
+Parser -[hidden]-> Command
+Keyword -[hidden]-> Option
+Parser -[hidden]-> CommandHandler
+CommandHandler ..> "<<singleton>> \n ExpenseManager" : manipulates
 
 @enduml

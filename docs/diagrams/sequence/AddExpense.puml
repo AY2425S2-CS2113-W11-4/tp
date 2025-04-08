@@ -1,29 +1,28 @@
 @startuml
-actor Caller
-participant "<u>:CommandHandler" as CH
-participant "<u>:Currency" as CUR <<enumeration>>
-participant "<u>:ExpenseManager" as EM
+actor User
 
-Caller -> CH: handleAddExpense(...)
-alt amount <= 0
-    CH -> Caller: throw InvalidArgumentException
-else
-    CH -> CUR: valueOf
-    alt IllegalArgumentException thrown
-        CUR --> CH: throw IllegalArgumentException
-        CH -> Caller: throw InvalidArgumentException()
-    else Valid currencyStr
-        CUR --> CH: currency
-        CH -> CUR: convert(amount)
-        CUR --> CH: convertedAmount
-        CH -> EM: addExpense(...)
-        CH -> EM: getRemainingBudget()
-        EM --> CH: remainingBudget
-        alt remainingBudget >= 0
-            CH -> Caller: return "Expense " + expenseName + " added successfully.\nYour remaining budget is $" + formatted(remainingBudget)
-        else remainingBudget < 0
-            CH -> Caller: return "Expense " + expenseName + " added successfully.\nUh oh! You've exceeded your budget.\nYou are now in debt by $" + (-remainingBudget) + ". Time to rein it in!\nConsider adjusting your budget to get back on track!"
-        end
-    end
-end
+participant ":CommandHandler" as CH
+participant ":ExpenseManager" as EM
+participant ":Expense" as Exp
+
+User -> CH : handleAddExpense(expenseName, amount, category)
+activate CH
+CH -> EM : addExpense(expenseName, amount, category)
+activate EM
+
+EM -> EM : Check if expense name is empty\nand if duplicate exists
+EM -> EM : createCategory(category)
+activate EM
+EM --> EM : createCategory(category) completes
+deactivate EM
+
+EM -> Exp : new Expense
+activate Exp
+deactivate Exp
+
+EM -> EM : Add Expense to expenses list\nUpdate totalExpense
+deactivate EM
+
+CH --> User : message
+deactivate CH
 @enduml

@@ -1,0 +1,29 @@
+@startuml
+top to bottom direction
+hide circle
+skinparam classAttributeIconSize 0
+skinparam classIconSize 0
+
+package "storage" {
+    class DataHandler {
+        - <u> logger: Logger
+        + DataHandler(logger: Logger)
+        - round2Digits(x: double): double
+        + saveData(path: String, expenseManager: ExpenseManager): String
+        + loadData(path: String): String
+    }
+
+    class FileHandler {
+        - <u>logger: Logger
+        + readJsonObject(path: String): JSONObject
+        + writeJsonObject(path: String, data: JSONObject): String
+    }
+}
+
+DataHandler --> FileHandler : fileHandler
+
+
+DataHandler ..> ExpenseManager : uses
+TripBuddy ..> DataHandler
+
+@enduml
