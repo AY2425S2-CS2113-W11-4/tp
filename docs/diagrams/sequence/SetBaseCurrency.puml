@@ -7,28 +7,43 @@ participant ":Expense" as EXP
 participant ":newBase" as newBase
 
 Caller -> CH: handleSetBaseCurrency(baseCurrency)
+activate CH
 alt Invalid base currency
     CH -> CUR: valueOf(baseCurrency.toUpperCase())
-    note right: IllegalArgumentException thrown
+    activate CUR
+    note right of CUR: IllegalArgumentException thrown
+    CUR --> CH: throw IllegalArgumentException
+    deactivate CUR
     CH -> Caller: throw InvalidArgumentException("Base currency is not a valid currency.")
+    deactivate CH
 else Valid base currency
     CH -> CUR: valueOf(baseCurrency.toUpperCase())
+    activate CUR
     CUR --> CH: newBase
+    deactivate CUR
+
     CH -> newBase: getRate()
+    activate newBase
     newBase --> CH: newBaseRate
+    deactivate newBase
 
     ' Update budget
     CH -> EM: getBudget()
+    activate EM
     EM --> CH: currentBudget
     CH -> newBase: convert(currentBudget)
+    activate newBase
     newBase --> CH: convertedBudget
+    deactivate newBase
     CH -> EM: setBudget(convertedBudget)
 
     ' Update total expense
     CH -> EM: getTotalExpense()
     EM --> CH: currentTotalSpent
     CH -> newBase: convert(currentTotalSpent)
+    activate newBase
     newBase --> CH: convertedTotalSpent
+    deactivate newBase
     CH -> EM: setTotalExpense(convertedTotalSpent)
 
     ' Update each expense's amount
@@ -36,24 +51,34 @@ else Valid base currency
     EM --> CH: List<Expense>
     loop For each Expense in List
         CH -> EXP: getAmount()
+        activate EXP
         EXP --> CH: expenseAmount
+        deactivate EXP
         CH -> newBase: convert(expenseAmount)
+        activate newBase
         newBase --> CH: convertedExpenseAmount
+        deactivate newBase
         CH -> EXP: setAmount(convertedExpenseAmount)
     end
 
     ' Update rates of all currencies
     loop For each Currency c in Currency.values()
         CH -> CUR: c.getRate()
+        activate CUR
         CUR --> CH: cRate
+        deactivate CUR
         CH -> CH: compute newRate = cRate / newBaseRate
         CH -> CUR: c.setRate(newRate)
     end
 
     ' Return confirmation
     CH -> newBase: toString()
+    activate newBase
     newBase --> CH: baseCurrencyString
+    deactivate newBase
     CH -> Caller: return "Current base is: " + baseCurrencyString
+    deactivate EM
+    deactivate CH
 end
 @enduml
 
