@@ -151,8 +151,7 @@ currency code (e.g., "USD", "SGD").
 
 Usage:
 * The JSON file is written to disk when the user exits the application.
-* It is loaded during application startup to 
-restore the previous session.
+* It is loaded during application startup to restore the previous session.
 
 
 ### Exceptions 
