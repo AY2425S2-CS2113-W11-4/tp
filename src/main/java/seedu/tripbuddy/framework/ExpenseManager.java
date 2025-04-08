@@ -489,7 +489,10 @@ public class ExpenseManager {
         }
         for (Expense expense : expenses) {
             if (expense.getName().equalsIgnoreCase(expenseName)) {
+                double oldTotalExpense = getTotalExpense();
+                double oldExpenseAmount = expense.getAmount();
                 expense.setAmount(amount);
+                setTotalExpense(oldTotalExpense + (amount - oldExpenseAmount));
                 return;
             }
         }
