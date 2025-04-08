@@ -206,7 +206,7 @@ class CommandHandlerTest {
     }
 
     @Test
-    public void setBaseCurrency_correct() throws InvalidArgumentException {
+    public void setBaseCurrency_correct() {
         try {
             commandHandler.handleSetBaseCurrency("USD");
         } catch (InvalidArgumentException e) {
@@ -243,7 +243,7 @@ class CommandHandlerTest {
         String timestampStr = "2024-01-01 10:00:00";
         InvalidArgumentException thrown = assertThrows(InvalidArgumentException.class, () ->
                 commandHandler.handleSetTime(name, timestampStr));
-        assertEquals("Expense name not found.", thrown.getMessage(),
+        assertEquals("Expense with name `ghost-expense` not found.", thrown.getMessage(),
                 "The exception message should be 'Expense name not found.'");
     }
 

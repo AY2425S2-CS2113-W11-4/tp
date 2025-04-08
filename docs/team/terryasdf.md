@@ -11,11 +11,15 @@ travelers to log expenses, categorize them, and view a summary of their spending
 * **Project Design:** Proposing, implementing, and maintaining the whole standardized multi-layered CLI framework of the
 project; created packages for all classes.
 
-* **Testing:** Designed various test cases for a wide range of classes, as well as testing with large number of
-corner cases for the release program, to ensure it can handle most of the unexpected behaviors.
+* **Testing:** Designed various unit-test cases for a wide range of classes, as well as system testing with large 
+numbers of corner cases for the release program before each release, to ensure it can handle most of the unexpected
+behaviors.
 
-* **Command Implementations:** Implemented the option-value command parser, which allows extra spacing and handles
-and multiple exceptions caused by the user. Also implemented and fixed various command features for corner cases.
+* **Command Parser:** Implemented the option-value command parser, which allows extra spacing and handles
+and multiple exceptions caused by the user.
+
+* **Command Implementations:** Implemented, updated and added multiple exception handling to various
+command features for corner cases.
 
 * **Exception Handling:** Created standardized exception handlers and standardize all exception handling procedures.
 
