@@ -281,10 +281,9 @@ in the new base currency.
 currency. 
 
 We can see how we do it in the following sequence diagram. 
-
-
+<div style="text-align: center;">
 <img src="diagrams/sequence/SetBaseCurrency.png" alt="Set Base Currency Diagram" width="700">
-
+</div>
 
 #### **Step 2**: Conversion logic
 When an expense is added:
