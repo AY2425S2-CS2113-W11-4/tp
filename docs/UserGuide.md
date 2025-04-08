@@ -92,7 +92,7 @@ the new expenditure.
 
 - `AMOUNT` is in base currency.
 
-Format: `add-expense NAME_EXPENSE -a AMOUNT [-c CATEGORY]`
+Format: `add-expense EXPENSE_NAME -a AMOUNT [-c CATEGORY]`
 
 Examples of usage:
 - `add-expense mcdonalds -a 5`
@@ -102,14 +102,26 @@ Examples of usage:
 
 Removes an expense from the trip.
 
-Format: `delete-expense NAME_EXPENSE`
+Format: `delete-expense EXPENSE_NAME`
 
 Examples of usage:
 - delete-expense the-plaza-hotel
 
+### Edit Amount: `edit-amount`
+
+Edits the amount associated with an expense. Overrides the previous amount.
+
+Format: `edit-amount EXPENSE_NAME -a AMOUNT`
+
+- `AMOUNT` must be a positive number.
+
+Examples of usage:
+- add-expense breakfast -a 10
+- edit-amount breakfast -a 13
+
 ### List Expense: `list-expense`
 
-Show all expenses, or expenses under a category if CATEGORY is given, and the sum of recorded expenses.
+Display all expenses, or expenses under a category if CATEGORY is given, and the sum of recorded expenses.
 
 Format: `list-expense [CATEGORY]`
 
@@ -144,12 +156,23 @@ Examples of usage:
 - `create-category Accommodation`
 - `create-category food and drink`
 
+### Delete Category: `delete-category`
+
+Deletes a category from the category list.
+
+- The category must be empty (have no associated expenses) in order to be deleted.
+
+Format:  `delete-category NAME`
+
+Examples of usage:
+- `delete-category Accommodation`
+
 ### Set Category: `set-cateogry`
 
 Set the category for a particular expense that has been already inputted by the user. This command will override a 
 prior category that was set for that specific expense.
 
-Format: `set-category NAME_EXPENSE -c CATEGORY`
+Format: `set-category EXPENSE_NAME -c CATEGORY`
 
 - If CATEGORY does not exist in the existing record of categories, then a new category will be created with
 the specified name.
@@ -157,11 +180,21 @@ the specified name.
 Examples:
 - `set-category mcdonalds -c food`
 
+### Clear Category: `clear-cateogry`
+
+Clear the category for a particular expense that has been already inputted by the user, meaning the expense will no
+longer belong to any category.
+
+Format: `clear-category EXPENSE_NAME`
+
+Examples:
+- `clear-category greek-meal`
+
 ### Set Time: `set-time`
 
 Updates the timestamp for an existing expense to a custom date and time.
 
-Format: `set-time NAME_EXPENSE -t yyyy-MM-dd HH:mm:ss`
+Format: `set-time EXPENSE_NAME -t yyyy-MM-dd HH:mm:ss`
 
 Examples:
 - `set-time dinner -t 2024-03-20 18:45:00`
@@ -175,7 +208,7 @@ Format: `view-categories`
 ### Clear: `clear`
     
 Clear all past expenses and categories.
-- Still keeps the budget.
+- Budget remains the same.
 
 Format: `clear`
 
@@ -184,3 +217,76 @@ Format: `clear`
 Exit the program.
 
 Format: `quit`
+
+### Saving the Data
+
+TripBuddy persists user data (budget, expenses, and categories) in the hard disk automatically after any command that 
+changes the data. There is no need to save manually.
+
+Usage:
+* The JSON file `[JAR file location]/tripbuddy_data.json` is written to disk when the user exits the application.
+* It is loaded during application startup to restore the previous session.
+
+## FAQ
+**Q:** How do I transfer my data to another Computer?
+
+**A:** Install the app in the other computer and overwrite the empty data file it creates with the file that contains the 
+data of your previous TripBuddy home folder.
+
+## Known issues
+- Avoid using excessively large/small values or overlength names to ensure correct parsing.
+- Avoid exit with `Ctrl+C` or force killing the process to prevent data loss. Instead, use the `quit` command to ensure 
+all data is correctly written to disk.
+
+## Command Summary
+
+### Formatting
+| **Action**        | **Format**                                                  |
+|-------------------|-------------------------------------------------------------|
+| View tutorial     | `tutorial`                                                  |
+| Set Base Currency | `set-base-currency CURRENCY`                                |
+| View Currency     | `view-currency`                                             |
+| Set Budget        | `set-budget BUDGET_NUMBER`                                  |
+| View Budget       | `view-budget`                                               |
+| Add Expense       | `add-expense EXPENSE_NAME -a AMOUNT [-c CATEGORY]`          |
+| Delete Expense    | `delete-expense EXPENSE_NAME`                               |
+| Edit Amount       | `edit-amount EXPENSE_NAME -a AMOUNT`                        |
+| List Expense      | `list-expense [CATEGORY]`                                   |
+| Search Expense    | `search SEARCHWORD`                                         |
+| Max Expense       | `max-expense`                                               |
+| Min Expense       | `min-expense`                                               |
+| Filter Date       | `filter-date -f yyyy-MM-dd HH:mm:ss -t yyyy-MM-dd HH:mm:ss` |
+| Create Category   | `create-category NAME`                                      |
+| Delete Category   | `delete-category NAME`                                      |
+| Set Category      | `set-category EXPENSE_NAME -c CATEGORY`                     |
+| Clear Category    | `clear-category EXPENSE_NAME`                               |
+| Set Time          | `set-time EXPENSE_NAME -t yyyy-MM-dd HH:mm:ss`              |
+| View Categories   | `view-categories`                                           |
+| Clear All         | `clear`                                                     |
+| Exit Program      | `quit`                                                      |
+
+### Examples
+| **Action**               | **Examples**                                                                |
+|--------------------------|-----------------------------------------------------------------------------|
+| `tutorial`               | `tutorial`                                                                  |
+| `set-base-currency`      | `set-base-currency USD`                                                     |
+| `view-currency`          | `view-currency`                                                             |
+| `set-budget`             | `set-budget 2050`                                                           |
+| `view-budget`            | `view-budget`                                                               |
+| `add-expense`            | `add-expense mcdonalds -a 5`<br>`add-expense museum -a 10000 -c Activities` |
+| `delete-expense`         | `delete-expense mcdonalds`                                                  |
+| `edit-amount`            | `edit-amount mcdonalds -a 7`                                                |
+| `list-expense`           | `list-expense`<br>`list-expense Activities`                                 |
+| `search`                 | `search restaurant`                                                         |
+| `max-expense`            | `max-expense`                                                               |
+| `min-expense`            | `min-expense`                                                               |
+| `filter-date`            | `filter-date -f 2025-04-01 00:00:00 -t 2025-04-05 23:59:59`                 |
+| `create-category`        | `create-category Accommodation`<br>`create-category food and drink`         |
+| `delete-category`        | `delete-category Accommodation`                                             |
+| `set-category`           | `set-category the-plaza-hotel -c Accommodation`                             |
+| `clear-category`         | `clear-category the-plaza-hotel`                                            |
+| `set-time`               | `set-time mcdonalds -t 2024-03-20 18:45:00`                                 |
+| `view-categories`        | `view-categories`                                                           |
+| `clear`                  | `clear`                                                                     |
+| `quit`                   | `quit`                                                                      |
+
