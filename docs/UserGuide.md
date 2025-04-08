@@ -241,6 +241,7 @@ all data is correctly written to disk.
 ## Command Summary
 
 ### Formatting
+
 | **Action**        | **Format**                                                  |
 |-------------------|-------------------------------------------------------------|
 | View tutorial     | `tutorial`                                                  |
@@ -266,6 +267,7 @@ all data is correctly written to disk.
 | Exit Program      | `quit`                                                      |
 
 ### Examples
+
 | **Action**               | **Examples**                                                                |
 |--------------------------|-----------------------------------------------------------------------------|
 | `tutorial`               | `tutorial`                                                                  |
