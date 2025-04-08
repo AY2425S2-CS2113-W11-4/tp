@@ -92,7 +92,7 @@ the new expenditure.
 
 - `AMOUNT` is in base currency.
 
-Format: `add-expense NAME_EXPENSE -a AMOUNT [-c CATEGORY]`
+Format: `add-expense EXPENSE_NAME -a AMOUNT [-c CATEGORY]`
 
 Examples of usage:
 - `add-expense mcdonalds -a 5`
@@ -102,14 +102,26 @@ Examples of usage:
 
 Removes an expense from the trip.
 
-Format: `delete-expense NAME_EXPENSE`
+Format: `delete-expense EXPENSE_NAME`
 
 Examples of usage:
 - delete-expense the-plaza-hotel
 
+### Edit Amount: `edit-amount`
+
+Edits the amount associated with an expense. Overrides the previous amount.
+
+Format: `edit-amount EXPENSE_NAME -a AMOUNT`
+
+- `AMOUNT` must be a positive integer.
+
+Examples of usage:
+- add-expense breakfast -a 10
+- edit-amount breakfast -a 13
+
 ### List Expense: `list-expense`
 
-Show all expenses, or expenses under a category if CATEGORY is given, and the sum of recorded expenses.
+Display all expenses, or expenses under a category if CATEGORY is given, and the sum of recorded expenses.
 
 Format: `list-expense [CATEGORY]`
 
@@ -144,12 +156,23 @@ Examples of usage:
 - `create-category Accommodation`
 - `create-category food and drink`
 
+### Delete Category: `delete-category`
+
+Deletes a category from the category list.
+
+- The category must be empty (have no associated expenses) in order to be deleted.
+
+Format:  `delete-category NAME`
+
+Examples of usage:
+- `delete-category Accommodation`
+
 ### Set Category: `set-cateogry`
 
 Set the category for a particular expense that has been already inputted by the user. This command will override a 
 prior category that was set for that specific expense.
 
-Format: `set-category NAME_EXPENSE -c CATEGORY`
+Format: `set-category EXPENSE_NAME -c CATEGORY`
 
 - If CATEGORY does not exist in the existing record of categories, then a new category will be created with
 the specified name.
@@ -157,11 +180,21 @@ the specified name.
 Examples:
 - `set-category mcdonalds -c food`
 
+### Clear Category: `clear-cateogry`
+
+Clear the category for a particular expense that has been already inputted by the user, meaning the expense will no
+longer belong to any category.
+
+Format: `clear-category EXPENSE_NAME`
+
+Examples:
+- `clear-category greek-meal`
+
 ### Set Time: `set-time`
 
 Updates the timestamp for an existing expense to a custom date and time.
 
-Format: `set-time NAME_EXPENSE -t yyyy-MM-dd HH:mm:ss`
+Format: `set-time EXPENSE_NAME -t yyyy-MM-dd HH:mm:ss`
 
 Examples:
 - `set-time dinner -t 2024-03-20 18:45:00`
@@ -175,7 +208,7 @@ Format: `view-categories`
 ### Clear: `clear`
     
 Clear all past expenses and categories.
-- Still keeps the budget.
+- Budget remains the same.
 
 Format: `clear`
 

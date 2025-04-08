@@ -14,9 +14,11 @@ travelers to log expenses, categorize them, and view a summary of their spending
 
 * **Budgeting Logic Contributions:** Contributed to budgeting logic by handling expense additions and deletions.
 
-* **Assertions & Testing:** Added assertions and tests for the Parser and UI classes.
+* **Assertions & Testing:** Added assertions and tests for the Parser, UI, and CommandHandler classes.
 
 * **Command Implementations v2.0:** Implemented the adjust-budget command to update budgets based on user modifications.
+
+* **Command Implementations v2.1:** Implemented the delete-category, clear-category, and edit-amount commands.
 
 * **Exception Handling:** Improved error handling to ensure robust user interactions and prevent crashes.
 
@@ -32,10 +34,14 @@ travelers to log expenses, categorize them, and view a summary of their spending
   * `add-expense`
   * `set-category`
   * `delete-expense`
+  * `delete-category`
+  * `clear-category`
+  * `edit-amount`
   * `quit`
 
 ### Contributions to the DG
 
+* Wrote the Storage section, describing the JSON save format details.
 * Authored the Value Proposition section, outlining the unique advantages of TripBuddy.
 * Refined the Target User Profile section to enhance clarity and professionalism.
 * Contributed five user stories to illustrate various usage scenarios.
@@ -46,6 +52,7 @@ travelers to log expenses, categorize them, and view a summary of their spending
 * Maintained the issue tracker by adding, assigning, and resolving appropriate issues.
 * Released v1.0 and closed the milestone.
 * Updated multiple UG and DG docs that are not specific to a feature.
+* Reviewed and merged PRs upon group member request.
 
 ### Mentoring contributions
 * Identified and resolved unhandled errors and exceptions to improve system stability.

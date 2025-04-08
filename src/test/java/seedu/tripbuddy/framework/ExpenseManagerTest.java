@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -202,5 +203,79 @@ class ExpenseManagerTest {
         List<Expense> filteredExpenses = expenseManager.getExpensesByDateRange(start, end);
 
         assertEquals(0, filteredExpenses.size(), "Should return 0 expenses since none are within the date range");
+    }
+
+    @Test
+    void deleteCategory_successfullyDeletesExistingCategory() throws InvalidArgumentException {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        expenseManager.createCategory("food");
+        expenseManager.createCategory("accommodation");
+        expenseManager.deleteCategory("food");
+        assertFalse(expenseManager.getCategories().contains("food"));
+    }
+
+    @Test
+    void deleteCategory_throwsWhenCategoryNameIsEmpty() {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        InvalidArgumentException thrown = assertThrows(
+                InvalidArgumentException.class,
+                () -> expenseManager.deleteCategory("")
+        );
+        assertEquals("Category name should not be empty.", thrown.getMessage());
+    }
+
+    @Test
+    void deleteCategory_throwsWhenCategoryDoesNotExist() {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        InvalidArgumentException thrown = assertThrows(
+                InvalidArgumentException.class,
+                () -> expenseManager.deleteCategory("food")
+        );
+        assertEquals("Category with name `food` does not exist.", thrown.getMessage());
+    }
+
+    @Test
+    void deleteCategory_doesNotDeleteWhenCategoryIsNotEmpty() throws InvalidArgumentException {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        expenseManager.createCategory("food");
+        expenseManager.addExpense("greek-meal", 10, "food");
+        expenseManager.deleteCategory("food");
+        assertTrue(expenseManager.getCategories().contains("food"));
+    }
+
+    @Test
+    void editExpenseAmount_successfullyEditsAmount() throws InvalidArgumentException {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        expenseManager.addExpense("Coffee", 3.50);
+        expenseManager.editExpenseAmount("Coffee", 4.25);
+        Expense updated = expenseManager.getExpenses().get(0);
+        assertEquals(4.25, updated.getAmount());
+    }
+
+    @Test
+    void editExpenseAmount_throwsIfAmountIsNegative() {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        Exception exception = assertThrows(InvalidArgumentException.class, () ->
+                expenseManager.editExpenseAmount("Lunch", -5));
+        assertEquals("Amount should be a positive integer.", exception.getMessage());
+    }
+
+    @Test
+    void clearCategory_successfullyClearsCategory() throws InvalidArgumentException {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        expenseManager.addExpense("greek-meal", 50, "food");
+        expenseManager.clearCategory("greek-meal");
+        Expense expense = expenseManager.getExpense(0);
+        assertNull(expense.getCategory());
+    }
+
+    @Test
+    void clearCategory_throwsIfExpenseDoesNotExist() {
+        ExpenseManager expenseManager = ExpenseManager.getInstance(1000);
+        InvalidArgumentException thrown = assertThrows(
+                InvalidArgumentException.class,
+                () -> expenseManager.clearCategory("airplane")
+        );
+        assertEquals("Expense with name `airplane` does not exist.", thrown.getMessage());
     }
 }
