@@ -4,40 +4,51 @@ skinparam classAttributeIconSize 0
 
 ' Remove the default class icon
 skinparam classIconSize 0
-class "<<abstract>> \n InvalidCommandException"
-class "<<abstract>> \n TripBuddyException"
-class InvalidKeywordException
-class InvalidArgumentException
+package exceptions{
+    class "<<abstract>> \n InvalidCommandException"
+    class "<<abstract>> \n TripBuddyException"
+    class InvalidKeywordException
+    class InvalidArgumentException
 
-"<<abstract>> \n TripBuddyException" <|-- "<<abstract>> \n InvalidCommandException"
-"<<abstract>> \n InvalidCommandException" <|-- InvalidKeywordException
-"<<abstract>> \n InvalidCommandException" <|-- InvalidArgumentException
-"<<abstract>> \n InvalidCommandException" <|-- MissingOptionException
+    "<<abstract>> \n TripBuddyException" <|-- "<<abstract>> \n InvalidCommandException"
+    "<<abstract>> \n InvalidCommandException" <|-- InvalidKeywordException
+    "<<abstract>> \n InvalidCommandException" <|-- InvalidArgumentException
+    "<<abstract>> \n InvalidCommandException" <|-- MissingOptionException
+    "<<abstract>> \n TripBuddyException" <|-- DataLoadingException
 
-class ExceptionHandler {
 
-+ <u>handleInvalidKeywordException(e: InvalidKeywordException):void
-+ <u>handleInvalidArgumentException(e: InvalidArgumentException): void
-+ <u>handleArrayIndexOutOfBoundsException(): void
-+ <u>handleDateTimeParseException(e: DateTimeParseException): void
-}
+    class ExceptionHandler {
 
-class InvalidArgumentException {
-- argument: String
-}
+    + <u>handleInvalidKeywordException(e: InvalidKeywordException):String
+    + <u>handleInvalidArgumentException(e: InvalidArgumentException): String
+    + <u>handleArrayIndexOutOfBoundsException(): String
+    + <u>handleDateTimeParseException(e: DateTimeParseException): String
+    + <u>handleFileNotFoundException(e: FileNotFoundException): String
+    + <u>handleException(e: Exception): String
+    + <u>handleMissingOptionException(e: MissingOptionException): String
+    }
 
-class "<<abstract>> \n InvalidCommandException" {
+    class InvalidArgumentException {
+    - argument: String
+    }
 
-}
+    class "<<abstract>> \n InvalidCommandException" {
 
-class MissingOptionException {
-}
+    }
 
-class InvalidKeywordException {
-- keyword: String
+    class MissingOptionException {
+    -missingOpt: String
+    }
 
-}
+    class InvalidKeywordException {
+    - keyword: String
 
-class "<<abstract>> \n TripBuddyException" {
-}
+    }
+
+    class "<<abstract>> \n TripBuddyException" {
+    }
+
+    class DataLoadingException
+    }
+
 @enduml

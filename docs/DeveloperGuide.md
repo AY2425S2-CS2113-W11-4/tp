@@ -6,7 +6,7 @@
 
 - [JSON-java](https://github.com/stleary/JSON-java): a third-party library for
 JSON conversion and parsing.
-
+---
 ## Design
 
 This section describes some details on the design.
@@ -26,6 +26,8 @@ In a high level, we can find the folowing classes:
   <img src="diagrams/class/TripBuddyClassDiagram.png" alt="GeneralDesign" width="200">
 </div>
 
+---
+
 ### Ui 
 This is made of one class: `Ui`. 
 
@@ -36,12 +38,14 @@ The `Ui` class is responsible for displaying messages to the user via the comman
 * Formatting outputs for clarity and readability.
 * Ensuring smooth user experience by maintaining a consistent UI flow.
 
-
+---
 ### Logic - User Input
 These classes are responsible for making sense of the user's input and creating 
 `Command`s that will be useful for the model.
 
-The following classes are the ones dealing with the logic. 
+The following classes are the ones dealing with the logic.
+
+<img src="diagrams/class/CommandDiagram.png" alt="Command Classes" width=400>
 
 
 #### CommandHandler
@@ -70,7 +74,6 @@ For example, in the following sequence diagram, we show how `handlerAddExpense` 
 
 Inside this logic, we also find other classes.
 
-<img src="diagrams/class/CommandDiagram.png" alt="Command Classes" width=400>
 
 ##### Command
 This class keeps the information of a Command, such as, `view-currency` or `add-expense`.
@@ -93,6 +96,7 @@ The main tasks for this class are to:
 * Parse the user's input to a `Command` object
 * Check whether an argument is optional or not
 
+---
 
 ### Model - Expenses
 In order to implement the model of the app, we have used an `ExpenseManager` that keeps the information of the 
@@ -135,8 +139,65 @@ The amount of the expense is calculated in the base currency. You can change the
 This is an enumeration class explaining all the available currencies. The base currency is the one whose exchange rate
 is one. The default base currency is SGD.
 
+
+---
+
 ### Storage 
 TripBuddy persists user data (budget, expenses, and categories) by serializing it into a structured JSON file.
+
+The storage module is responsible for persisting and retrieving the application's data in JSON format. 
+It comprises two main classes: **DataHandler** and **FileHandler**. 
+
+While these classes form the core of our storage solution, DataHandler also relies on **ExpenseManager** 
+(implemented as a singleton) to access and update the current state of expense data.
+
+#### FileHandler
+
+The main purpose is:
+- Provides file operations for reading from and writing to JSON files.
+- Ensures that all necessary directories exist before writing and handles the low-level I/O operations.
+
+**Key Methods:**
+
+- **`readJsonObject(String path)`**  
+  Reads a JSON file from the specified path, aggregates its content into a string using a `Scanner`, and then parses 
+the string into a `JSONObject`.
+
+- **`writeJsonObject(String path, JSONObject data)`**  
+  Writes a formatted (pretty-printed) JSON string to the specified path. If the file’s parent directories are missing, 
+they are automatically created. Logging is performed to capture operations such as directory initialization.
+
+  
+#### DataHandler
+
+The main purpose is:
+- Coordinates data persistence by converting the state of the ExpenseManager into JSON for saving, as well 
+as reconstructing that state from JSON during loading.
+- Acts as the bridge between the in-memory data (via ExpenseManager) and the physical file system (via FileHandler).
+
+**Key Methods:**
+
+- **`saveData(String path, ExpenseManager expenseManager)`**
+  - Converts the current state of the ExpenseManager (including budget, currency, categories, and expense list) 
+into a structured JSON object.
+  - Delegates the file-writing operation to FileHandler.
+  - Logs progress at key steps (e.g., when converting budgets, categories, and expenses).
+
+
+- **`loadData(String path)`**
+  - Reads the JSON file from the provided path.
+  - Updates the ExpenseManager with the loaded data, handling cases of missing or malformed fields.
+  - Aggregates error messages when issues occur, ensuring robust error reporting without halting the application.
+
+
+
+<div style="text-align: center;">
+  <img src="diagrams/class/StorageDiagram.png" alt="GeneralDesign" width="400">
+</div>
+
+
+
+#### JSON file structure
 
 Fields:
 * currency (String): The base currency used for all budget and expense tracking. This is stored using the standard 
@@ -149,15 +210,39 @@ currency code (e.g., "USD", "SGD").
   * category (String): The category this expense belongs to. Can be empty if uncategorized.
   * dateTime (String): The date and time in yyyy-MM-dd HH:mm:ss format of when the expense was recorded or modified.
 
-Usage:
-* The JSON file is written to disk when the user exits the application.
-* It is loaded during application startup to restore the previous session.
-
+---
 
 ### Exceptions 
 We have defined different exception types to ensure that all errors are properly covered. 
+<div style="text-align: center;">
+  <img src="diagrams/class/ExceptionDiagram.png" alt="GeneralDesign" width="400">
+</div>
 
-<img src="diagrams/class/ExceptionDiagram.png" alt="Exception Diagram" width=400>
+This diagram defines the custom exception hierarchy used in TripBuddy and shows the `ExceptionHandler` class that centrally manages error messages.
+
+### Exception Hierarchy
+
+- **`<<abstract>> TripBuddyException`**  
+  The root for all custom TripBuddy exceptions.
+
+- **`<<abstract>> InvalidCommandException`**  
+  Base for command-related errors.
+  - **`InvalidKeywordException`**: Raised for unrecognized keywords (stores the problematic keyword).
+  - **`InvalidArgumentException`**: Raised for invalid command arguments (stores the offending argument).
+  - **`MissingOptionException`**: Raised when a required option is absent (stores missing option details).
+
+- **`DataLoadingException`**  
+  Signals errors during data loading (e.g., JSON parsing issues) and extends `TripBuddyException`.
+
+### ExceptionHandler Class
+
+Provides centralized methods for handling exceptions, such as:
+- `handleInvalidKeywordException`
+- `handleInvalidArgumentException`
+- `handleMissingOptionException`
+- Other methods to handle array index issues, date parsing, file not found, and general exceptions.
+
+This structure simplifies error reporting and ensures consistent exception handling throughout the application.
 
 ## Implementation
 This section describes an explanation on some of the implemented features. 
@@ -189,11 +274,14 @@ We can also see the current currency rates available in our app using the comman
 `view-currency`. This will display the above `json`. 
 
 Moreover, we can also change the base currency. In order to do this, we will:
-1. Recalculate existing expenses: all previously recorded expenses need to be recalculated to reflect their values in the new base currency. 
+1. Recalculate existing expenses: all previously recorded expenses need to be recalculated to reflect their values 
+in the new base currency. 
 2. Update the budget: update the value of the budget so that is consistent with the current currency.
-3. Recalculate Conversion Rates: divide all the values in the conversion dictionary by the current rate to that currency. 
+3. Recalculate Conversion Rates: divide all the values in the conversion dictionary by the current rate to that 
+currency. 
 
 We can see how we do it in the following sequence diagram. 
+
 
 <img src="diagrams/sequence/SetBaseCurrency.png" alt="Set Base Currency Diagram" width="700">
 
