@@ -113,7 +113,7 @@ Edits the amount associated with an expense. Overrides the previous amount.
 
 Format: `edit-amount EXPENSE_NAME -a AMOUNT`
 
-- `AMOUNT` must be a positive integer.
+- `AMOUNT` must be a positive number.
 
 Examples of usage:
 - add-expense breakfast -a 10

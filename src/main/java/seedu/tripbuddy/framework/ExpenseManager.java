@@ -323,7 +323,10 @@ public class ExpenseManager {
      */
     public void setExpenseCategory(String expenseName, String category) throws InvalidArgumentException {
         if (expenseName.isEmpty()) {
-            throw new JSONException("Expense name should not be empty.");
+            throw new InvalidArgumentException("", "Expense name should not be empty.");
+        }
+        if (category.isEmpty()) {
+            throw new InvalidArgumentException("", "Category name should not be empty.");
         }
         for (Expense expense : expenses) {
             if (expense.getName().equalsIgnoreCase(expenseName)) {
