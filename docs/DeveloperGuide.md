@@ -135,24 +135,11 @@ The amount of the expense is calculated in the base currency. You can change the
 This is an enumeration class explaining all the available currencies. The base currency is the one whose exchange rate
 is one. The default base currency is SGD.
 
+
+
+
 ### Storage 
-TripBuddy persists user data (budget, expenses, and categories) by serializing it into a structured JSON file.
 
-Fields:
-* currency (String): The base currency used for all budget and expense tracking. This is stored using the standard 
-currency code (e.g., "USD", "SGD").
-* budget (Double): The total budget allocated for the trip, rounded to two decimal places.
-* categories (Array<String>): A list of category names that expenses can be grouped under.
-* expenses (Array<Object>): List of recorded expenses, each represented as an object. Each expense contains:
-  * name (String): The identifier of the expense. 
-  * amount (Double): The cost of the expense. 
-  * category (String): The category this expense belongs to. Can be empty if uncategorized.
-  * dateTime (String): The date and time in yyyy-MM-dd HH:mm:ss format of when the expense was recorded or modified.
-
-Usage:
-* The JSON file is written to disk when the user exits the application.
-* It is loaded during application startup to 
-restore the previous session.
 
 
 ### Exceptions 

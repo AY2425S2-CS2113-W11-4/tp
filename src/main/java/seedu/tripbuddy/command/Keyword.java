@@ -55,16 +55,7 @@ public enum Keyword {
     SET_TIME,
 
     /** Clears all expenses and categories from memory. */
-    CLEAR,
-
-    /** Deletes an empty category. **/
-    DELETE_CATEGORY,
-
-    /** Clears the category of an expense. **/
-    CLEAR_CATEGORY,
-
-    /** Edits the amount of an expense. **/
-    EDIT_AMOUNT;
+    CLEAR;
 
     /**
      * Returns the command keyword in its user-facing string form.
@@ -91,9 +82,6 @@ public enum Keyword {
         case SET_BASE_CURRENCY -> "set-base-currency";
         case SET_TIME -> "set-time";
         case CLEAR -> "clear";
-        case DELETE_CATEGORY -> "delete-category";
-        case CLEAR_CATEGORY -> "clear-category";
-        case EDIT_AMOUNT -> "edit-amount";
         };
     }
 }

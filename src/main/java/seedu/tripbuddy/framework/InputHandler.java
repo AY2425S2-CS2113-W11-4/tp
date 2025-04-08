@@ -77,12 +77,6 @@ public class InputHandler {
             case SET_BASE_CURRENCY -> commandHandler.handleSetBaseCurrency(cmd.getOpt(""));
             case SET_TIME -> commandHandler.handleSetTime(cmd.getOpt(""), cmd.getOpt("t"));
             case CLEAR -> commandHandler.handleClearAll();
-            case DELETE_CATEGORY -> commandHandler.handleDeleteCategory(cmd.getOpt(""));
-            case CLEAR_CATEGORY -> commandHandler.handleClearCategory(cmd.getOpt(""));
-            case EDIT_AMOUNT -> {
-                double amount = cmd.parseDouble("a");
-                yield commandHandler.handleEditExpenseAmount(cmd.getOpt(""), amount);
-            }
             };
         } catch (DateTimeParseException e) {
             return ExceptionHandler.handleDateTimeParseException(e);

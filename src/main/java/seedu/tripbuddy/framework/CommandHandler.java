@@ -54,8 +54,6 @@ public class CommandHandler {
                         - Add a new expense.
                 delete-expense EXPENSE_NAME
                         - Remove an expense by name.
-                edit-amount EXPENSE_NAME -a AMOUNT
-                        - Edit the amount associated with an expense. Override the previous amount.
                 list-expense [CATEGORY]
                         - Show all expenses, or expenses under a category if CATEGORY is given.
                         - Calculate sum of recorded expenses.
@@ -69,12 +67,8 @@ public class CommandHandler {
                         - Get all expenses within date range, inclusive.
                 create-category CATEGORY
                         - Create a new expense category.
-                delete-category CATEGORY_NAME
-                        - Delete an empty category by name.
                 set-category EXPENSE_NAME -c CATEGORY
                         - Assign an expense to a category.
-                clear-category EXPENSE_NAME
-                        - Clear the category of a specified expense, so the expense no longer belongs to any category.
                 view-categories
                         - Displays all categories.
                 set-time EXPENSE_NAME -t yyyy-MM-dd HH:mm:ss
@@ -235,20 +229,8 @@ public class CommandHandler {
         }
         expensesString.append("\nTotal amount spent: ")
                 .append(expenseManager.getBaseCurrency().getFormattedAmount(totalAmount)).append(".");
-        if (!expenses.isEmpty()) {
-            if (category != null) {
-                return "Here is a list of your past expenses in category `" + category + "`: " + expensesString;
-            } else {
-                return "Here is a list of your past expenses: " + expensesString;
-            }
-        } else {
-            if (category != null) {
-                return "There are no expenses in category `" + category + "`.";
-            } else {
-                return "There are no expenses.";
-            }
-        }
-
+        return expenses.isEmpty() ? "There are no expenses." : "Here is a list of your past expenses: "
+                + expensesString;
     }
 
     /**
@@ -421,54 +403,6 @@ public class CommandHandler {
                 return "Updated timestamp for \"" + expenseName + "\" to " + timestampStr + ".";
             }
         }
-        throw new InvalidArgumentException(expenseName, "Expense with name `" + expenseName + "` not found.");
-    }
-
-    /**
-     * Deletes a category by name.
-     *
-     * @param category The name of the category to delete.
-     * @return A confirmation message if the deletion was successful.
-     * @throws InvalidArgumentException If the deletion fails.
-     */
-    public String handleDeleteCategory(String category) throws InvalidArgumentException {
-        assert category != null;
-        boolean success = expenseManager.deleteCategory(category);
-        if (success) {
-            return "Category `" + category + "` deleted successfully.";
-        } else {
-            return "Category `" + category + "` has recorded expenses.\nYou can only delete an empty category.";
-        }
-    }
-
-    /**
-     * Clears the category of an expense.
-     *
-     * @param expenseName The name of the expense to clear.
-     * @return A confirmation message if the clearance was successful.
-     * @throws InvalidArgumentException If the clearance fails.
-     */
-    public String handleClearCategory(String expenseName) throws InvalidArgumentException {
-        assert expenseName != null;
-        String oldCategory = expenseManager.clearCategory(expenseName);
-        if (!oldCategory.isEmpty()) {
-            return "Success! `" + expenseName + "` no longer belongs to the category `" + oldCategory + "`.";
-        } else {
-            return "`" + expenseName + "` already did not belong to any category.";
-        }
-    }
-
-    /**
-     * Edits the amount associated with an expense.
-     *
-     * @param expenseName The name of the expense to edit.
-     * @return A confirmation message if the edit was successful.
-     * @throws InvalidArgumentException If the edit fails.
-     */
-    public String handleEditExpenseAmount(String expenseName, Double amount) throws InvalidArgumentException {
-        assert expenseName != null;
-        assert amount != null;
-        expenseManager.editExpenseAmount(expenseName, amount);
-        return "Successfully modified expense `" + expenseName + "` to have amount "+ amount + ".";
+        throw new InvalidArgumentException(expenseName, "Expense name not found.");
     }
 }
